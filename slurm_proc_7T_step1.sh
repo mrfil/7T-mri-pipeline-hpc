@@ -153,6 +153,18 @@ else
 
 	cd ${projDir}
 
+	${scripts}/project_doc.sh ${project} ${subject} ${sesname} "mriqc" "no"
+	NOW=$(date +"%m-%d-%Y-%T")
+	echo "MRIQC started $NOW" >> ${scripts}/fulltimer.txt
+	echo "Denoising MP2RAGE with LAYNII"
+	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/sub-${sub}/ses-${ses}/anat:/datain $IMAGEDIR/laynii-2.0.0.sif /opt/laynii2/laynii/LN_MP2RAGE_DNOISE -INV1 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-1_T1w.nii.gz -INV2 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-2_T1w.nii.gz -UNI /datain/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w.nii.gz -beta 0.2
+	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/*inv* ${projDir}/bids/derivatives/
+	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/*uni_run-*_T1w.nii.gz ${projDir}/bids/derivatives/
+	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/*uni_run-*_T1w.json ${projDir}/bids/derivatives/
+	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w*border*.nii.gz ${projDir}/bids/derivatives/
+        mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w_denoised.nii.gz ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageunidenoised_T1w.nii.gz 
+
+
 	mkdir ${projDir}/bids/derivatives/mriqc
 	chmod 777 -R ${projDir}/bids/derivatives/mriqc
 
@@ -187,21 +199,8 @@ else
         mv ./ndi_out/mag.nii ./ndi_out/${subject}_${sesname}_ndi_mag_fp4.nii
         mv ./ndi_out/phs.nii ./ndi_out/${subject}_${sesname}_ndi_phs_fp4.nii
         mv ./ndi_out/qsm.nii ./ndi_out/${subject}_${sesname}_ndi_qsm_fp4.nii
-
-
 	
-	cd $projDir	
-
-	${scripts}/project_doc.sh ${project} ${subject} ${sesname} "mriqc" "no"
-	NOW=$(date +"%m-%d-%Y-%T")
-	echo "MRIQC started $NOW" >> ${scripts}/fulltimer.txt
-	echo "Denoising MP2RAGE with LAYNII"
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/sub-${sub}/ses-${ses}/anat:/datain $IMAGEDIR/laynii-2.0.0.sif /opt/laynii2/laynii/LN_MP2RAGE_DNOISE -INV1 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-1_T1w.nii.gz -INV2 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-2_T1w.nii.gz -UNI /datain/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w.nii.gz -beta 0.2
-	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/*inv* ${projDir}/bids/derivatives/
-	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/*uni_run-*_T1w.nii.gz ${projDir}/bids/derivatives/
-	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/*uni_run-*_T1w.json ${projDir}/bids/derivatives/
-	mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w*border*.nii.gz ${projDir}/bids/derivatives/
-        mv ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w_denoised.nii.gz ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageunidenoised_T1w.nii.gz 
+	cd ${projDir}
 	echo "Running mriqc"
 	TEMPLATEFLOW_HOST_HOME=$IMAGEDIR/templateflow
         export SINGULARITYENV_TEMPLATEFLOW_HOME="/templateflow"
