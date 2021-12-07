@@ -2,7 +2,7 @@
 #
 #   Single-subject pipeline output collating to labeled csv
 #
-#   pipeline_collate.sh -p {project} -z {bidsname of subject} -s {bidsname of session} {base directory} {version}
+#   pipeline_collate.sh -p {project} -z {bidsname of subject} -s {bidsname of session} -b {base directory} -t {version}
 #
 #   Paul Camacho
 
@@ -185,19 +185,19 @@ SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cl
 #fi
 
 #sub-MBB005_ses-A_run-1_desc-ImageQC_dwi.csv
-cp ${qsiprepDir}/${subject}_${session}_desc-ImageQC_dwi.csv ${outputDir}/${subject}_${session}_desc-ImageQC_dwi.csv
+cp ${qsiprepDir}/${subject}_${session}_run-1_desc-ImageQC_dwi.csv ${outputDir}/${subject}_${session}_run-1_desc-ImageQC_dwi.csv
 cp ${qsireconDir}/qsi_nbs_${subject}_aal116.txt ${outputDir}/${subject}_${session}_nbs_qsi_aal116.csv
 cp ${qsireconDir}/qsi_nbs_${subject}_brainnetome246.txt ${outputDir}/${subject}_${session}_nbs_qsi_brainnetome246.csv
 cp ${qsireconDir}/qsi_nbs_${subject}_power264.txt ${outputDir}/${subject}_${session}_nbs_qsi_power264.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${qsireconDir}:/datain,${scriptsDir}:/scripts ${IMAGEDIR}/pylearn.sif python3 /scripts/gqimetrics.py
+SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity exec --cleanenv -B ${qsireconDir}:/datain,${scriptsDir}:/scripts ${IMAGEDIR}/pylearn.sif python3 /scripts/gqimetrics.py
 mv ${qsireconDir}/gqi_nbs.csv ${outputDir}/${subject}_${session}_run-1_desc-gqi_nbs.csv
 
 #ashs volumes - will need to be converted to different format
 cp ${ashsDir}/${session}_left_heur_volumes.txt ${outputDir}/${subject}_${session}_left_heur_volumes.txt
 cp ${ashsDir}/${session}_right_heur_volumes.txt ${outputDir}/${subject}_${session}_right_heur_volumes.txt
-cp ${scripts}/left_hippo_label.csv ${outputDir}/
-cp ${scripts}/right_hippo_label.csv ${outputDir}/
+cp ${scriptsDir}/left_hippo_label.csv ${outputDir}/
+cp ${scriptsDir}/right_hippo_label.csv ${outputDir}/
 cd ${outputDir}
 cat ${subject}_${session}_right_heur_volumes.txt | cut -d ' '  -f5 | tr '\n' ',' | sed '1 s/.\{1\}$//' > right_volumes.csv
 cat ${subject}_${session}_left_heur_volumes.txt | cut -d ' '  -f5 | tr '\n' ',' | sed '1 s/.\{1\}$//' > left_volumes.csv
@@ -302,8 +302,7 @@ if [ -f "${subject}_${session}_qsm_fp2_ROI_STATS.csv" ];
 then
     paste -d, tmpfinal.csv ${subject}_${session}_qsm_fp2_ROI_STATS.csv > tmpfinal_qsm.csv
     mv tmpfinal_qsm.csv tmpfinal.csv
-else;
-then
+else
     echo "No QSM statistics found"
 fi
 
@@ -311,8 +310,7 @@ if [ -f "${subject}_${session}_left_heur_volumes.txt" ];
 then
     paste -d, tmpfinal.csv ${subject}_${session}_ashs_volumes.csv > tmpfinal_ashs.csv
     mv tmpfinal_ashs.csv tmpfinal.csv
-else;
-then
+else
     echo "No ASHS volumes found"
 fi
 
@@ -320,8 +318,7 @@ if [ -f "${subject}_${session}_run-1_desc-gqi_nbs.csv" ];
 then
     paste -d, tmpfinal.csv ${subject}_${session}_run-1_desc-gqi_nbs.csv > tmpfinal_gqinbs.csv
     mv tmpfinal_gqinbs.csv tmpfinal.csv
-else;
-then
+else
     echo "No GQI NBS found"
 fi
 
