@@ -190,6 +190,9 @@ cp ${qsireconDir}/qsi_nbs_${subject}_aal116.txt ${outputDir}/${subject}_${sessio
 cp ${qsireconDir}/qsi_nbs_${subject}_brainnetome246.txt ${outputDir}/${subject}_${session}_nbs_qsi_brainnetome246.csv
 cp ${qsireconDir}/qsi_nbs_${subject}_power264.txt ${outputDir}/${subject}_${session}_nbs_qsi_power264.csv
 
+SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${qsireconDir}:/datain,${scriptsDir}:/scripts ${IMAGEDIR}/pylearn.sif python3 /scripts/gqimetrics.py
+mv ${qsireconDir}/gqi_nbs.csv ${outputDir}/${subject}_${session}_run-1_desc-gqi_nbs.csv
+
 #ashs volumes - will need to be converted to different format
 cp ${ashsDir}/${session}_left_heur_volumes.txt ${outputDir}/${subject}_${session}_left_heur_volumes.txt
 cp ${ashsDir}/${session}_right_heur_volumes.txt ${outputDir}/${subject}_${session}_right_heur_volumes.txt
@@ -311,6 +314,15 @@ then
 else;
 then
     echo "No ASHS volumes found"
+fi
+
+if [ -f "${subject}_${session}_run-1_desc-gqi_nbs.csv" ];
+then
+    paste -d, tmpfinal.csv ${subject}_${session}_run-1_desc-gqi_nbs.csv > tmpfinal_gqinbs.csv
+    mv tmpfinal_gqinbs.csv tmpfinal.csv
+else;
+then
+    echo "No GQI NBS found"
 fi
 
 mv tmpfinal.csv ${subject}_${session}_pipeline_results.csv
