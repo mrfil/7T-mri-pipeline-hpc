@@ -80,11 +80,11 @@ sesname="ses-"${session}
        	#extract brain from fmriprep
         echo "Extracting brain from T1w based on fMRIPrep ANTs output"
 	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}/ndi_out:/dataqsm $IMAGEDIR/neurodoc.sif fslmaths /dataqsm/resample_card_"$subject"_"$sesname""$acqtag"desc-preproc_T1w.nii.gz -mas /dataqsm/resample_card_"$subject"_"$sesname""$acqtag"desc-brain_mask.nii.gz /dataqsm/resample_card_"$subject"_"$sesname""$acqtag"desc-brain.nii.gz
-	echo "Registering swi magnitude image to resampled deobliqued preprocessed T1w (see fmriprep anat outputs for more details)"
+	echo "Registering resampled deobliqued preprocessed T1w image to swi magnitude (see fmriprep anat outputs for more details)"
 	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}/ndi_out:/dataqsm $IMAGEDIR/neurodoc.sif flirt -cost normmi -dof 12 -in /dataqsm/resample_card_"$subject"_"$sesname""$acqtag"desc-brain.nii.gz -ref /dataqsm/${subject}_${sesname}_ndi_mag_fp2_restore.nii.gz -omat /dataqsm/rage2swi.mat -out /dataqsm/rage_in_mag.nii.gz	
 	echo "Inverting transform matrix"
 	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}/ndi_out:/dataqsm $IMAGEDIR/neurodoc.sif convert_xfm -omat /dataqsm/swi2rage.mat -inverse /dataqsm/rage2swi.mat
-	echo "Registering resampled deobliqued freesurfer parcellation to swi magnitude image (see fmriprep anat outputs for more details)"
+	echo "Registering qsm magnitude image to resampled deobliqued preprocessed T1w image space (see fmriprep anat outputs for more details)"
 	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}/ndi_out:/dataqsm $IMAGEDIR/neurodoc.sif flirt -interp sinc -in /dataqsm/"$subject"_"$sesname"_ndi_qsm_fp2 -ref /dataqsm/resample_card_"$subject"_"$sesname""$acqtag"desc-brain.nii.gz -applyxfm -init /dataqsm/swi2rage.mat -out /dataqsm/QSM_to_RAGE.nii.gz
-	echo "Calculation ROI-wise stats on QSM image using fslstats"
+	echo "Calculation ROI-wise stats on T1w space QSM image using fslstats"
 	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}/ndi_out:/dataqsm,${scripts}:/scripts $IMAGEDIR/neurodoc.sif /scripts/qsm_stats_rage.sh ${subject} ${sesname}
