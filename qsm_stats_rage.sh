@@ -2,6 +2,8 @@
 
 subject=$1
 sesname=$2
+fthresh=$3
+sequence=$4
 roi_names=/scripts/aparc_cort_subcort_labels.txt
 cd /dataqsm
 
@@ -25,7 +27,7 @@ while read roi_name_tmp; do
     roi_stats_tmp=`cat roistats.txt`
     echo $roi_stats_tmp
     
-    echo "${roi_name}_vol_voxels ${roi_name}_vol_mm3 ${roi_name}_mean_nonzero ${roi_name}_standard_deviation ${roi_name}_min ${roi_name}_max ${roi_name}_min_robust ${roi_name}_max_robust" > roistats.csv
+    echo "${sequence}_fp${fthresh}_${roi_name}_vol_voxels ${sequence}_fp${fthresh}_${roi_name}_vol_mm3 ${sequence}_fp${fthresh}_${roi_name}_mean_nonzero ${sequence}_fp${fthresh}_${roi_name}_standard_deviation ${sequence}_fp${fthresh}_${roi_name}_min ${sequence}_fp${fthresh}_${roi_name}_max ${sequence}_fp${fthresh}_${roi_name}_min_robust ${sequence}_fp${fthresh}_${roi_name}_max_robust" > roistats.csv
     echo $roi_stats_tmp >> roistats.csv
     sed -i 's/ *$//' roistats.csv
     sed -i 's/\ /,/g' roistats.csv
@@ -34,9 +36,9 @@ while read roi_name_tmp; do
     mv roitmp.nii.gz ./masks/${roi_name}.nii.gz
 done <$roi_names
 sed -i 's/\([^,]*\),\(.*\)/\2/' ROI_STATS.csv
-mv ROI_STATS.csv ROI_STATS_rage.csv
+mv ROI_STATS.csv ${sequence}_ROI_STATS_rage_fp${fthresh}.csv
 echo "Cleaning tmp files"
 rm roi_csv_tmp.csv
 rm roistats.csv
 rm roistats.txt
-echo "Statistics available in ROI_STATS.csv within QSM directory"
+echo "Statistics available in ${sequence}_ROI_STATS_rage_f${fthresh}.csv within QSM directory"

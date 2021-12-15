@@ -22,8 +22,10 @@ fmriprepDir=${projDir}/bids/derivatives/fmriprep/${subject}/${session}
 xcpDir=${projDir}/bids/derivatives/xcp/${session}
 qsiprepDir=${projDir}/bids/derivatives/qsiprep/${subject}/${session}/dwi
 qsireconDir=${projDir}/bids/derivatives/qsirecon/${subject}/${session}/dwi
+aspireDir=${projDir}/bids/derivatives/swi/${subject}/${session}/ndi_out
 swiDir=${projDir}/bids/derivatives/swi/${subject}/${session}/ndi_out
 ashsDir=${projDir}/bids/derivatives/ashs/${subject}/${session}/final
+qatoolsDir=${projDir}/bids/derivatives/qatools/${subject}
 scriptsDir=${based}/${version}/scripts
 
 
@@ -190,7 +192,8 @@ cp ${qsireconDir}/qsi_nbs_${subject}_aal116.txt ${outputDir}/${subject}_${sessio
 cp ${qsireconDir}/qsi_nbs_${subject}_brainnetome246.txt ${outputDir}/${subject}_${session}_nbs_qsi_brainnetome246.csv
 cp ${qsireconDir}/qsi_nbs_${subject}_power264.txt ${outputDir}/${subject}_${session}_nbs_qsi_power264.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity exec --cleanenv -B ${qsireconDir}:/datain,${scriptsDir}:/scripts ${IMAGEDIR}/pylearn.sif python3 /scripts/gqimetrics.py
+cp ${qsireconDir}/${subject}_${sesname}_NODDI_STATS.csv ${outputDir}/
+
 mv ${qsireconDir}/gqi_nbs.csv ${outputDir}/${subject}_${session}_run-1_desc-gqi_nbs.csv
 
 #ashs volumes - will need to be converted to different format
@@ -210,7 +213,12 @@ rm right_hippo.csv
 rm left_hippo.csv
 
 #qsm stats
-cp ${swiDir}/ROI_STATS.csv ${outputDir}/${subject}_${session}_qsm_fp2_ROI_STATS.csv
+cp ${aspireDir}/*ROI_STATS_rage_f*.csv ${outputDir}/
+cp ${swiDir}/*ROI_STATS_rage_*.csv ${outputDir}/
+
+#QA Tools output
+cp ${qatoolsDir}/qatools-results.csv ${outputDir}/${subject}_${session}_qatools-results.csv
+
 
 # create csv and rename existing version
 if [ -f "$outputDir/${subject}_${session}_pipeline_results.csv" ];
@@ -298,12 +306,20 @@ else
     mv tmpnbs12.csv tmpfinal.csv
 fi
 
-if [ -f "${subject}_${session}_qsm_fp2_ROI_STATS.csv" ];
+if [ -f "ASPIRE_ROI_STATS_rage_fp1" ];
 then
-    paste -d, tmpfinal.csv ${subject}_${session}_qsm_fp2_ROI_STATS.csv > tmpfinal_qsm.csv
+    paste -d, tmpfinal.csv *_ROI_STATS_rage*.csv > tmpfinal_qsm.csv
     mv tmpfinal_qsm.csv tmpfinal.csv
 else
     echo "No QSM statistics found"
+fi
+
+if [ -f "${subject}_${sesname}_NODDI_STATS.csv" ];
+then 
+    paste -d, tmpfinal.csv ${subject}_${sesname}_NODDI_STATS.csv > tmpfinal_noddi.csv
+    mv tmpfinal_noddi.csv tmpfinal.csv
+else
+    echo "No NODDI statistics found"
 fi
 
 if [ -f "${subject}_${session}_left_heur_volumes.txt" ];
@@ -320,6 +336,14 @@ then
     mv tmpfinal_gqinbs.csv tmpfinal.csv
 else
     echo "No GQI NBS found"
+fi
+
+if [ -f "${subject}_${session}_qatools-results.csv" ];
+then
+    paste -d, tmpfinal.csv ${subject}_${session}_qatools-results.csv > tmpfinal_qatools.csv
+    mv tmpfinal_qatools.csv tmpfinal.csv
+else
+    echo "No QA Tools output found"
 fi
 
 mv tmpfinal.csv ${subject}_${session}_pipeline_results.csv
