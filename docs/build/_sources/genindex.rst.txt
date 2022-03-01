@@ -12,26 +12,28 @@ Welcome to 7T MRI Pipeline HPC's documentation!
    
    About
    Usage
-      Main-Pipeline
+      Main Pipeline
       Sub-Pipelines
-      Heuristics
+      Preparing your heuristic.py
    Install
+      Dependencies
    FAQs
    Troubleshooting
-   Manual-Correction
-   Citing
-   Requests
+   Manual Correction
+   Citing the HPC Pipeline
+      References
+   Requesting new pipeline configurations
 
 Indices and tables
 ==================
 
-* :ref:`genindex<Index>`
-* :ref:`About<About>`
-* :ref:`Usage<Usage>`
-* :ref:`Install<Installation>`
-* :ref:`FAQs<Frequently Asked Questions>`
-* :ref:`Troubleshooting<Troubleshooting>`
-* :ref:`Manual-Correction<Manual Correction>`
-* :ref:`Citing<Citing the HPC Pipeline>`
-* :ref:`Requests<Requesting new pipeline configurations>`
+* :ref:`modindex`
+* :ref:`About`
+* :ref:`Usage`
+* :ref:`Installation`
+* :ref:`FAQs`
+* :ref:`Troubleshooting`
+* :ref:`Manual Correction`
+* :ref:`Citing the HPC Pipeline`
+* :ref:`Requesting new pipeline configurations`
 * :ref:`search`
