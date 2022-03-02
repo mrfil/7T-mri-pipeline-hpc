@@ -16,13 +16,14 @@ In any case, you will likely need to adjust your heuristic.py file iteratively a
 This pipeline repo contains the example heuristic.py - `main_heuristic.py <https://github.com/mrfil/7T-pipeline-hpc/blob/main/main_heuristic.py>`_ - that should be modified to fit your study scan protocol.
 
 .. code-block:: python
+
     import os
-    
+
     def create_key(template, outtype=('nii.gz',), annotation_classes=None):
     if template is None or not template:
         raise ValueError('Template must be a valid format string')
     return template, outtype, annotation_classes
-    
+
     def infotodict(seqinfo):
     """Heuristic evaluator for determining which runs belong where
     allowed template fields - follow python string module:
@@ -43,9 +44,9 @@ This pipeline repo contains the example heuristic.py - `main_heuristic.py <https
     swi = create_key('sub-{subject}/{session}/derivatives/swi/sub-{subject}_{session}_acq-{acq}_dir-PA_run-{item:01d}_t2star')
     asl = create_key('sub-{subject}/{session}/derivatives/perf/sub-{subject}_{session}_acq-{acq}_run-{item:01d}_asl')
     t2w = create_key('sub-{subject}/{session}/anat/sub-{subject}_{session}_acq-{acq}_run-{item:01d}_T2w')
-    
+
     info = {t1w: [], dwi: [], t2w: [], FLAIR: [], rest: [], rest_sbref: [], fmap_fmri: [], fmap_tfmri: [] , fmap_dwi: [], tfunc: [], swi: [], asl: []} 
-   
+
     for s in seqinfo:
         if (('T1w' in s.protocol_name) or ((s.dim3 == 192) and (s.dim4 == 1))) and ('t1' in s.protocol_name):
             info[t1w] = [s.series_id] # assign if a single series meets criteria
@@ -91,11 +92,13 @@ This pipeline repo contains the example heuristic.py - `main_heuristic.py <https
                 info[fmap_tfmri].append({'item': s.series_id, 'acq': 'fMRI', 'dir': 'PA'})
     return info
 
+
 Running HeuDiConv with your adjusted heuristic.py will depend on your use case and installation method.
+
 .. :hlist::
     * HeuDiConv runs as part of the `main pipeline shell script <https://github.com/mrfil/7T-pipeline-hpc/blob/main/main_heuristic.py>`_. However, this can be less efficient for testing a heuristic.py.
     * Using the Singularity image that runs in the pipeline:
-    .. :code-block:: bash
+    .. code-block:: bash
         singularity exec --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-0.9.0.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite
 
 After conversion to BIDS using HeuDiConv, you will need to make sure that any fieldmap images used for susceptibility distortion correction (for fMRI and DWI)

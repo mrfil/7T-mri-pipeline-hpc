@@ -15,6 +15,8 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Heuristics" href="Heuristics.html" />
+    <link rel="prev" title="Main Pipeline" href="Main-Pipeline.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -33,6 +35,40 @@
             
   <section id="sub-pipelines">
 <span id="id1"></span><h1>Sub-Pipelines<a class="headerlink" href="#sub-pipelines" title="Permalink to this headline">¶</a></h1>
+<p>The main pipeline consists of five sub-pipelines:</p>
+<ul class="simple">
+<li><p>Conversion to BIDS with HeuDiConv + basic quality control with MRIQC</p></li>
+<li><p>Functional preprocessing with fMRIPrep + resting-state analyses with XCPEngine</p></li>
+<li><p>Diffusion-weighted image preprocessing + reconstruction with QSIPrep</p></li>
+<li><p>Automated segmentation of hippocampal subfields with ASHS</p></li>
+<li><p>Quantitative susceptibility mapping</p></li>
+</ul>
+<section id="bids-app-containers">
+<h2>BIDS-App containers<a class="headerlink" href="#bids-app-containers" title="Permalink to this headline">¶</a></h2>
+<p>Examples of how to run each containerized BIDS-App used in our pipeline</p>
+<section id="mriqc">
+<h3>MRIQC<a class="headerlink" href="#mriqc" title="Permalink to this headline">¶</a></h3>
+</section>
+<section id="fmriprep">
+<h3>fMRIPrep<a class="headerlink" href="#fmriprep" title="Permalink to this headline">¶</a></h3>
+<p>Anatomical and functional image preprocessing</p>
+<p><em>If you do not have fMRI data, use the –anat-only argument</em></p>
+</section>
+<section id="xcpengine">
+<h3>XCPEngine<a class="headerlink" href="#xcpengine" title="Permalink to this headline">¶</a></h3>
+<p>Correlation-based resting-state functional connectivity analysis in multiple atlases.
+Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation</p>
+</section>
+<section id="qsiprep">
+<h3>QSIPrep<a class="headerlink" href="#qsiprep" title="Permalink to this headline">¶</a></h3>
+<p>Using the structural images and fieldmaps, we perform diffusion-weighted-image preprocessing and structural connectivity analysis in multiple atlases</p>
+<p>Preprocessing</p>
+<p>Reconstruction</p>
+<p>Constrained Spherical Deconvolution-based multi-shell multi-tissue w/ SIFT2 via MRtrix3 reconstruction workflow</p>
+<p>Generalized q-Sampling imaging via DSI Studio</p>
+<p>NODDI via AMICO python implementation</p>
+</section>
+</section>
 </section>
 
 
@@ -53,9 +89,21 @@
 
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="About.html">About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Main-Pipeline.html">Main Pipeline</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sub-Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bids-app-containers">BIDS-App containers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mriqc">MRIQC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fmriprep">fMRIPrep</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xcpengine">XCPEngine</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qsiprep">QSIPrep</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Heuristics.html">Heuristics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
 <li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
@@ -67,6 +115,8 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Main-Pipeline.html" title="previous chapter">Main Pipeline</a></li>
+      <li>Next: <a href="Heuristics.html" title="next chapter">Heuristics</a></li>
   </ul></li>
 </ul>
 </div>

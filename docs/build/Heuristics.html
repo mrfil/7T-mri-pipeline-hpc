@@ -42,14 +42,9 @@ Our pipelines currently use HeuDiConv, which uses a set of user-defined rules in
 These are based on the BIDS specification and can simplify comparison with other scans/studies.</p>
 <p>In any case, you will likely need to adjust your heuristic.py file iteratively at the start of working with a new dataset.
 This pipeline repo contains the example heuristic.py - <a class="reference external" href="https://github.com/mrfil/7T-pipeline-hpc/blob/main/main_heuristic.py">main_heuristic.py</a> - that should be modified to fit your study scan protocol.</p>
-<p>Running HeuDiConv with your adjusted heuristic.py will depend on your use case and installation method.
-.. :hlist:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>* HeuDiConv runs as part of the `main pipeline shell script &lt;https://github.com/mrfil/7T-pipeline-hpc/blob/main/main_heuristic.py&gt;`_. However, this can be less efficient for testing a heuristic.py.
-* Using the Singularity image that runs in the pipeline:
-.. :code-block:: bash
-    singularity exec --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-0.9.0.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite
-</pre></div>
-</div>
+<p>Running HeuDiConv with your adjusted heuristic.py will depend on your use case and installation method.</p>
+<p>After conversion to BIDS using HeuDiConv, you will need to make sure that any fieldmap images used for susceptibility distortion correction (for fMRI and DWI)
+have IntendedFor items in their BIDS sidecar JSON files. Our pipeline automates this using jq and bash, but it always good to check these JSONs in the bids/sourcedata/sub-&lt;participantID&gt;/ses-&lt;sessionID&gt;/fmap directory.</p>
 </section>
 
 
