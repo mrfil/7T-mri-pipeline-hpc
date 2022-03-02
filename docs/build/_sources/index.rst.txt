@@ -12,9 +12,9 @@ Welcome to 7T MRI Pipeline HPC's documentation!
    
    About
    Usage
-      Main-Pipeline
-      Sub-Pipelines
-      Heuristics
+   Main-Pipeline
+   Sub-Pipelines
+   Heuristics
    Install
    FAQs
    Troubleshooting
