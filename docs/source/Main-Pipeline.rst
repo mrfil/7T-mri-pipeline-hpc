@@ -102,3 +102,14 @@ https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data
 
 RSFC confound regression method + overall resting-state processing pipeline metrics
 https://xcpengine.readthedocs.io/qualitycontrol.html
+
+
+Preparing your dataset for sharing
+==================================
+
+An optional script is included in this repository for running pydeface on your BIDS dataset.
+This facilitates sharing data on databanks by removing identifying facial features from each image.
+You must specify which image modalities (e.g. T1w, T2w, FLAIR, etc.) to deface when running the script:
+
+.. code-block:: bash
+    ./singularity_deface_bids.sh -p <Project ID> -i <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
