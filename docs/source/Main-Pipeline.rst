@@ -112,4 +112,5 @@ This facilitates sharing data on databanks by removing identifying facial featur
 You must specify which image modalities (e.g. T1w, T2w, FLAIR, etc.) to deface when running the script:
 
 .. code-block:: bash
-    ./singularity_deface_bids.sh -p <Project ID> -i <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
+
+    ./singularity_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
