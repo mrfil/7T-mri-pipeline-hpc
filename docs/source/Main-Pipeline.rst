@@ -10,6 +10,14 @@ This pipeline uses internally and externally developed BIDS-Apps converted from 
 The pipeline consists of an initial conversion and quality control metric generation step, followed by four steps run in parallel with the Slurm Workload Manager (SchedMD LLC, Lehi, Utah, USA).
 *Note that these scripts can also be run on Linux systems not managed by Slurm.*
 
+The main pipeline consists of five sub-pipelines:
+
+* Conversion to BIDS with HeuDiConv + basic quality control with MRIQC
+* Functional preprocessing with fMRIPrep + resting-state analyses with XCPEngine
+* Diffusion-weighted image preprocessing + reconstruction with QSIPrep
+* Automated segmentation of hippocampal subfields with ASHS
+* Quantitative susceptibility mapping
+
 
 Inputs
 ******
@@ -24,12 +32,36 @@ along with resting-state functional connectivity analyses and structural connect
 Preprocessing derivatives
 =========================
 
-desc here
+Anatomical + Functional Preprocessing - fMRIPrep
+------------------------------------------------
+
+Anatomical and functional image preprocessing
+
+Diffusion - QSIPrep
+-------------------
+Using the structural images and fieldmaps, we perform diffusion-weighted-image preprocessing
+
 
 Analyses derivatives
 ====================
 
-desc here
+
+Functional connectivity - XCPEngine
+-----------------------------------
+
+Correlation-based resting-state functional connectivity analysis in multiple atlases.
+Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation
+
+Diffusion - QSIPrep
+-------------------
+
+Diffusion fiber orientation distribution fields reconstructoin and structural connectivity analysis in multiple atlases
+
+* Constrained Spherical Deconvolution-based multi-shell multi-tissue w/ SIFT2 via MRtrix3 reconstruction workflow
+
+* Generalized q-Sampling imaging via DSI Studio
+
+* NODDI via AMICO python implementation
 
 
 Metrics:
@@ -92,10 +124,10 @@ GlobalEfficiencyaal116scrub
 Quality Control Metrics
 -----------------------
 
-fMRI + MPRAGE
+fMRI + M2PRAGE
 https://mriqc.readthedocs.io/en/latest/measures.html
 	
-names appended with _t1w for MPRAGE, _rest should be in most of these resting-state fMRI metric names in csv
+names appended with _t1w for MP2RAGE, _rest should be in most of these resting-state fMRI metric names in csv
 
 DWI
 https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data

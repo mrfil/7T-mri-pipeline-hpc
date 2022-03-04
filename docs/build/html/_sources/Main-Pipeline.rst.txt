@@ -97,10 +97,10 @@ https://mriqc.readthedocs.io/en/latest/measures.html
 	
 names appended with _t1w for MPRAGE, _rest should be in most of these resting-state fMRI metric names in csv
 
-DWI
+DWI::
 https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data
 
-RSFC confound regression method + overall resting-state processing pipeline metrics
+RSFC confound regression method + overall resting-state processing pipeline metrics::
 https://xcpengine.readthedocs.io/qualitycontrol.html
 
 
@@ -112,4 +112,5 @@ This facilitates sharing data on databanks by removing identifying facial featur
 You must specify which image modalities (e.g. T1w, T2w, FLAIR, etc.) to deface when running the script:
 
 .. code-block:: bash
-    ./singularity_deface_bids.sh -p <Project ID> -i <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
+
+    ./singularity_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>

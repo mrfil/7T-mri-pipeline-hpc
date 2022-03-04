@@ -97,9 +97,9 @@ GlobalEfficiencyaal116scrub</p>
 <p>fMRI + MPRAGE
 <a class="reference external" href="https://mriqc.readthedocs.io/en/latest/measures.html">https://mriqc.readthedocs.io/en/latest/measures.html</a></p>
 <p>names appended with _t1w for MPRAGE, _rest should be in most of these resting-state fMRI metric names in csv</p>
-<p>DWI
+<p>DWI::
 <a class="reference external" href="https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data">https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data</a></p>
-<p>RSFC confound regression method + overall resting-state processing pipeline metrics
+<p>RSFC confound regression method + overall resting-state processing pipeline metrics::
 <a class="reference external" href="https://xcpengine.readthedocs.io/qualitycontrol.html">https://xcpengine.readthedocs.io/qualitycontrol.html</a></p>
 </section>
 </section>
@@ -108,6 +108,9 @@ GlobalEfficiencyaal116scrub</p>
 <p>An optional script is included in this repository for running pydeface on your BIDS dataset.
 This facilitates sharing data on databanks by removing identifying facial features from each image.
 You must specify which image modalities (e.g. T1w, T2w, FLAIR, etc.) to deface when running the script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./singularity_deface_bids.sh -p &lt;Project ID&gt; -m &lt;<span class="s2">&quot;T1w T2w FLAIR ...&quot;</span>&gt; -b &lt;base directory <span class="k">for</span> pipeline&gt; -t &lt;version of pipeline&gt;
+</pre></div>
+</div>
 </section>
 </section>
 </section>
