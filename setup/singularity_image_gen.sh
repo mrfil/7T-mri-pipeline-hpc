@@ -28,6 +28,13 @@ sudo SINGULARITY_NOHTTPS=1 singularity build pylearn.sif pylearndef
 #Start Docker registry for localhost
 docker run -d -p 5000:5000 --restart=always --name registry registry:2
 
+#build jq and jo image for new project_doc.sh
+cd ./ubuntu-jqjo
+docker build -t localhost:5000/ubuntu-jqjo:0.2 .
+docker push localhost:5000/ubuntu-jqjo:0.2
+cd ../
+SINGULARITY_NOHTTPS=1 singularity build ubuntu-jqjo-v0.2.sif docker://localhost:5000/ubuntu-jqjo:0.2
+
 # Follow directions to build Docker images for the following:
 # https://github.com/pinkeen/docker-html-to-pdf
 git clone https://github.com/pinkeen/docker-html-to-pdf.git
