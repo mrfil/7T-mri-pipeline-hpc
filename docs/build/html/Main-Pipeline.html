@@ -40,6 +40,14 @@ These are compatible with the Brain Imaging Data Structure (BIDS) specification 
 This pipeline uses internally and externally developed BIDS-Apps converted from Docker images to Singularity images or built directly as Singularity images (see <a class="reference internal" href="Install.html#install"><span class="std std-ref">the installation guide</span></a>).
 The pipeline consists of an initial conversion and quality control metric generation step, followed by four steps run in parallel with the Slurm Workload Manager (SchedMD LLC, Lehi, Utah, USA).
 <em>Note that these scripts can also be run on Linux systems not managed by Slurm.</em></p>
+<p>The main pipeline consists of five sub-pipelines:</p>
+<ul class="simple">
+<li><p>Conversion to BIDS with HeuDiConv + basic quality control with MRIQC</p></li>
+<li><p>Functional preprocessing with fMRIPrep + resting-state analyses with XCPEngine</p></li>
+<li><p>Diffusion-weighted image preprocessing + reconstruction with QSIPrep</p></li>
+<li><p>Automated segmentation of hippocampal subfields with ASHS</p></li>
+<li><p>Quantitative susceptibility mapping</p></li>
+</ul>
 <section id="inputs">
 <h2>Inputs<a class="headerlink" href="#inputs" title="Permalink to this headline">¶</a></h2>
 <p>The pipeline assumes data to be in a DICOM format, with some uniformity of organization based on the project/subject/session/series structure.</p>
@@ -50,11 +58,31 @@ The pipeline consists of an initial conversion and quality control metric genera
 along with resting-state functional connectivity analyses and structural connectivity analyses.</p>
 <section id="preprocessing-derivatives">
 <h3>Preprocessing derivatives<a class="headerlink" href="#preprocessing-derivatives" title="Permalink to this headline">¶</a></h3>
-<p>desc here</p>
+<section id="anatomical-functional-preprocessing-fmriprep">
+<h4>Anatomical + Functional Preprocessing - fMRIPrep<a class="headerlink" href="#anatomical-functional-preprocessing-fmriprep" title="Permalink to this headline">¶</a></h4>
+<p>Anatomical and functional image preprocessing</p>
+</section>
+<section id="diffusion-qsiprep">
+<h4>Diffusion - QSIPrep<a class="headerlink" href="#diffusion-qsiprep" title="Permalink to this headline">¶</a></h4>
+<p>Using the structural images and fieldmaps, we perform diffusion-weighted-image preprocessing</p>
+</section>
 </section>
 <section id="analyses-derivatives">
 <h3>Analyses derivatives<a class="headerlink" href="#analyses-derivatives" title="Permalink to this headline">¶</a></h3>
-<p>desc here</p>
+<section id="functional-connectivity-xcpengine">
+<h4>Functional connectivity - XCPEngine<a class="headerlink" href="#functional-connectivity-xcpengine" title="Permalink to this headline">¶</a></h4>
+<p>Correlation-based resting-state functional connectivity analysis in multiple atlases.
+Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation</p>
+</section>
+<section id="id2">
+<h4>Diffusion - QSIPrep<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>Diffusion fiber orientation distribution fields reconstructoin and structural connectivity analysis in multiple atlases</p>
+<ul class="simple">
+<li><p>Constrained Spherical Deconvolution-based multi-shell multi-tissue w/ SIFT2 via MRtrix3 reconstruction workflow</p></li>
+<li><p>Generalized q-Sampling imaging via DSI Studio</p></li>
+<li><p>NODDI via AMICO python implementation</p></li>
+</ul>
+</section>
 </section>
 <section id="metrics">
 <h3>Metrics:<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h3>
@@ -94,12 +122,12 @@ GlobalEfficiencyaal116scrub</p>
 </section>
 <section id="quality-control-metrics">
 <h4>Quality Control Metrics<a class="headerlink" href="#quality-control-metrics" title="Permalink to this headline">¶</a></h4>
-<p>fMRI + MPRAGE
+<p>fMRI + M2PRAGE
 <a class="reference external" href="https://mriqc.readthedocs.io/en/latest/measures.html">https://mriqc.readthedocs.io/en/latest/measures.html</a></p>
-<p>names appended with _t1w for MPRAGE, _rest should be in most of these resting-state fMRI metric names in csv</p>
-<p>DWI::
+<p>names appended with _t1w for MP2RAGE, _rest should be in most of these resting-state fMRI metric names in csv</p>
+<p>DWI
 <a class="reference external" href="https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data">https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data</a></p>
-<p>RSFC confound regression method + overall resting-state processing pipeline metrics::
+<p>RSFC confound regression method + overall resting-state processing pipeline metrics
 <a class="reference external" href="https://xcpengine.readthedocs.io/qualitycontrol.html">https://xcpengine.readthedocs.io/qualitycontrol.html</a></p>
 </section>
 </section>
