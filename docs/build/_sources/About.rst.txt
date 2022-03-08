@@ -16,7 +16,7 @@ The input DICOM dataset for your project should be somewhat organized to facilit
 Example: ::
     placeholder
 
-Our :ref:`Installation Guide<Install>`  To get started please install the following requirements:
+Our :ref:`Installation Guide<Install>` provides details on installing the following requirements:
 
 .. hlist::
     * Singularity BIDS apps (HeuDiConv, MRIQC, fMRIPrep, xcpEngine, QSIprep) 
