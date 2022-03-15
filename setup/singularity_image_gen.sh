@@ -13,8 +13,8 @@ cd ./singularity_images
 
 sudo singularity build mriqc-0.16.1.sif docker://poldracklab/mriqc:0.16.1
 sudo singularity build heudiconv-0.9.sif docker://nipy/heudiconv:0.9.0
-sudo singularity build fmriprep-v20.2.6.sif docker://nipreps/fmriprep:20.2.6
-sudo singularity build xcpengine-1.2.3.sif docker://pennbbl/xcpengine:1.2.3
+sudo singularity build fmriprep-v21.0.1.sif docker://nipreps/fmriprep:21.0.1
+sudo singularity build xcpengine-1.2.4.sif docker://pennbbl/xcpengine:1.2.4
 #for reorient_fslstd to prepare for SCFSL_GPU
 singularity build qsiprep-v0.15.1.sif docker://pennbbl/qsiprep:0.15.1
 
