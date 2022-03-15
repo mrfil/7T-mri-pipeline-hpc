@@ -40,6 +40,9 @@ Step 1 - conversion to BIDS, MP2RAGE denoising, and MRIQC
 
 After this has completed - technically after the MRIQC processing begins - you can queue the rest of the steps for processing as appropriate for your dataset.
 
+.. note::
+    Using FreeSurfer for QSIprep will require that portion of Step 2 to finish first!
+
 Step 2 - functional MRI stream
 ------------------------------
 
