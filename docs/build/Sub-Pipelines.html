@@ -44,10 +44,15 @@
 <li class="toctree-l1"><a class="reference internal" href="Main-Pipeline.html">Main Pipeline</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Sub-Pipelines</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#bids-app-containers">BIDS-App containers</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#mriqc">MRIQC</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fmriprep">fMRIPrep</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#xcpengine">XCPEngine</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#qsiprep">QSIPrep</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mriqc-anatomical-functional-quality-control">MRIQC - Anatomical &amp; Functional Quality Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fmriprep-anatomical-functional-preprocessing">fMRIPrep - Anatomical &amp; Functional Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xcpengine-correlation-based-resting-state-functional-connectivity-analysis">XCPEngine - Correlation-based resting-state functional connectivity analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#qsiprep-dwi-preprocessing-and-reconstruction">QSIPrep - DWI preprocessing and reconstruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing">FSL DTI probabilistic tractography from QSIPrep Preprocessing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qsiprep-preprocessing-reorient-to-fsl-space">QSIPrep preprocessing reorient to FSL space:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cuda-10-2-accelerated-fdt-pipeline">CUDA 10.2-accelerated FDT pipeline</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -97,15 +102,14 @@
 <section id="bids-app-containers">
 <h2>BIDS-App containers<a class="headerlink" href="#bids-app-containers" title="Permalink to this headline"></a></h2>
 <p>Examples of how to run each containerized BIDS-App used in our pipeline</p>
-<section id="mriqc">
-<h3>MRIQC<a class="headerlink" href="#mriqc" title="Permalink to this headline"></a></h3>
+<section id="mriqc-anatomical-functional-quality-control">
+<h3>MRIQC - Anatomical &amp; Functional Quality Control<a class="headerlink" href="#mriqc-anatomical-functional-quality-control" title="Permalink to this headline"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>singularity run --cleanenv --bind <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">SINGULARITYENV_TEMPLATEFLOW_HOME</span><span class="si">}</span>,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids:/data,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/mriqc:/out <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/mriqc-0.16.1.sif /data /out participant --participant-label <span class="si">${</span><span class="nv">CLEANSUBJECT</span><span class="si">}</span> --session-id <span class="si">${</span><span class="nv">CLEANSESSION</span><span class="si">}</span> -v --no-sub
 </pre></div>
 </div>
 </section>
-<section id="fmriprep">
-<h3>fMRIPrep<a class="headerlink" href="#fmriprep" title="Permalink to this headline"></a></h3>
-<p>Anatomical and functional image preprocessing</p>
+<section id="fmriprep-anatomical-functional-preprocessing">
+<h3>fMRIPrep - Anatomical &amp; Functional Preprocessing<a class="headerlink" href="#fmriprep-anatomical-functional-preprocessing" title="Permalink to this headline"></a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker <span class="nb">exec</span> -v <span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">SINGULARITYENV_TEMPLATEFLOW_HOME</span><span class="si">}</span> -v <span class="nv">$IMAGEDIR</span>/license.txt:/opt/freesurfer/license.txt -v <span class="nv">$TMPSING</span>:/paulscratch -v <span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/datain <span class="nv">$IMAGEDIR</span>/fmriprep-v21.0.0.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label <span class="si">${</span><span class="nv">subject</span><span class="si">}</span> --output-spaces <span class="o">{</span>MNI152NLin2009cAsym,T1w,fsnative<span class="o">}</span> -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
 </pre></div>
 </div>
@@ -120,22 +124,22 @@
 </pre></div>
 </div>
 </section>
-<section id="xcpengine">
-<h3>XCPEngine<a class="headerlink" href="#xcpengine" title="Permalink to this headline"></a></h3>
+<section id="xcpengine-correlation-based-resting-state-functional-connectivity-analysis">
+<h3>XCPEngine - Correlation-based resting-state functional connectivity analysis<a class="headerlink" href="#xcpengine-correlation-based-resting-state-functional-connectivity-analysis" title="Permalink to this headline"></a></h3>
 <p>Correlation-based resting-state functional connectivity analysis in multiple atlases.
 Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation</p>
 </section>
-<section id="qsiprep">
-<h3>QSIPrep<a class="headerlink" href="#qsiprep" title="Permalink to this headline"></a></h3>
+<section id="qsiprep-dwi-preprocessing-and-reconstruction">
+<h3>QSIPrep - DWI preprocessing and reconstruction<a class="headerlink" href="#qsiprep-dwi-preprocessing-and-reconstruction" title="Permalink to this headline"></a></h3>
 <p>Using the structural images and fieldmaps, we perform diffusion-weighted-image preprocessing and structural connectivity analysis in multiple atlases</p>
-<p>Preprocessing</p>
+<p><em>Preprocessing</em></p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker run -v <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir -v <span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch -v <span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.14.3.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives /data/bids/ --output-resolution <span class="m">1</span>.6 -w /paulscratch participant --participant-label <span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
 </pre></div>
 </div>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>singularity run --cleanenv --bind <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.14.3.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --output-resolution <span class="m">1</span>.6 -w /paulscratch participant --participant-label <span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
 </pre></div>
 </div>
-<p>Reconstruction</p>
+<p><em>Reconstruction</em></p>
 <p>Constrained Spherical Deconvolution-based multi-shell multi-tissue w/ SIFT2 via MRtrix3 reconstruction workflow</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
 docker run -v <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir -v <span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch -v <span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.14.3.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec mrtrix_multishell_msmt --output-resolution <span class="m">1</span>.6 -w /paulscratch participant --participant-label <span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
@@ -181,6 +185,46 @@ singularity run --cleanenv --bind <span class="si">${</span><span class="nv">IMA
 singularity run --cleanenv --bind <span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>:/scripts,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon/<span class="si">${</span><span class="nv">subject</span><span class="si">}</span>/<span class="si">${</span><span class="nv">sesname</span><span class="si">}</span>/dwi:/datanoddi <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/neurodoc.sif /scripts/noddi_stats.sh <span class="s2">&quot;</span><span class="nv">$subject</span><span class="s2">&quot;</span> <span class="s2">&quot;</span><span class="nv">$sesname</span><span class="s2">&quot;</span>
 </pre></div>
 </div>
+</section>
+<section id="fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing">
+<h3>FSL DTI probabilistic tractography from QSIPrep Preprocessing<a class="headerlink" href="#fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing" title="Permalink to this headline"></a></h3>
+<section id="qsiprep-preprocessing-reorient-to-fsl-space">
+<h4>QSIPrep preprocessing reorient to FSL space:<a class="headerlink" href="#qsiprep-preprocessing-reorient-to-fsl-space" title="Permalink to this headline"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+docker run -v <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir -v <span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch -v <span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.15.1.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec reorient_fslstd --output-resolution <span class="m">1</span>.6 -w /paulscratch participant --participant-label <span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+singularity run --cleanenv --bind <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data <span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.15.1.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec reorient_fslstd --output-resolution <span class="m">1</span>.6 -w /paulscratch participant --participant-label <span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+</section>
+<section id="cuda-10-2-accelerated-fdt-pipeline">
+<h4>CUDA 10.2-accelerated FDT pipeline<a class="headerlink" href="#cuda-10-2-accelerated-fdt-pipeline" title="Permalink to this headline"></a></h4>
+<p>Usage:</p>
+<p><em>Outputs</em></p>
+<p>In addition to the fdt_network_matrix produced by probtrackx2 for the masks
+derived from Freesurfer parcellation (generated in sMRIPrep/fMRIPrep),
+this sub-pipeline also outputs node-labeled csv files of the NxN streamline-weighted
+and ROI volume-weighted structural connectome.</p>
+<p><em>Performance</em></p>
+<p>From initial testing (on 23 datasets from 7T 1.6mm isotropic CMRR DWI):</p>
+<div class="line-block">
+<div class="line">OS (host)    | CUDA Version | GPU(s)                 | CPU(s)                                    | RAM    | Run time       |</div>
+</div>
+<p><a href="#id2"><span class="problematic" id="id3">|--------------|</span></a>:————:<a href="#id4"><span class="problematic" id="id5">|:----------------------:|</span></a>:—————————————–:<a href="#id6"><span class="problematic" id="id7">|:------:|</span></a>—————:|
+| CentOS       | 9.1          | Nvidia Tesla V100 16GB | Intel Xeon Gold 6138 2.00GHz (80 threads) | 192GB  | 30-35 minutes  |</p>
+<p>Peak GPU memory usage: 14435MiB / 16160MiB</p>
+<p>From testing 30 datasets from 3T 2.0mm isotropic CMRR DWI):</p>
+<div class="line-block">
+<div class="line">OS (host)    | CUDA Version | GPU(s)                 | CPU(s)                                    | RAM    | Run time       |</div>
+</div>
+<p><a href="#id8"><span class="problematic" id="id9">|--------------|</span></a>:————:<a href="#id10"><span class="problematic" id="id11">|:----------------------:|</span></a>:—————————————–:<a href="#id12"><span class="problematic" id="id13">|:------:|</span></a>—————:|
+| CentOS       | 9.1          | Nvidia Tesla V100 16GB | Intel Xeon Gold 6138 2.00GHz (80 threads) | 192GB  | 25-30 minutes  |
+| CentOS       | 10.2         | Nvidia Tesla V100 16GB | Intel Xeon Gold 6138 2.00GHz (80 threads) | 192GB  | 25-30 minutes  |</p>
+<p>Peak GPU memory usage: 13999MiB / 16160MiB
+Requires pre-existing FreeSurfer parcellation and FreeSurfer license.txt</p>
+</section>
 </section>
 </section>
 </section>
