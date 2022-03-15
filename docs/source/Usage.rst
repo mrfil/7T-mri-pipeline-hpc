@@ -65,6 +65,32 @@ Step 3 - diffusion MRI stream
     sbatch -a 001,002,003 ./dyno_PROJ_A.sh slurm_proc_7T_CUPS_step3.sh <PROJECTID> <base directory> <version>
 
 
+(Optional) Running FreeSurfer-informed FSL DTI tractography on GPU
+-------------------------------------------------------
+
+.. note::
+    Requires pre-existing FreeSurfer parcellation and FreeSurfer license.txt.
+    As of 03/15/2022, the main pipeline will can produce the QSIPrep preprocessing outputs in fsl space for this workflow. 
+    *These QSIPrep preprocessing outputs are required for the current script!*
+    This workflow is intended to run on machines with CUDA 9.1 or CUDA 10.2 compatible GPUs.
+
+*Docker*
+
+.. code-block:: bash
+    # Running SCFSL GPU tractography
+    docker exec --gpus all -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
+    -v /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt \
+    -v /path/project/bids:/data mrfilbi/scfsl_gpu:0.3.2 /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
+
+*Singularity*
+
+.. code-block:: bash
+    # Running SCFSL GPU tractography
+    SINGULARITY_ENVLD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
+    singularity exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
+    /path/to/scfsl_gpu-v0.3.2.sif /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
+
+
 Metrics Collation
 -----------------
 
