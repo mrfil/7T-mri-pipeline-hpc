@@ -4,7 +4,7 @@
 Usage
 -----
 
-We designed this pipeline to use a `Slurm<https://slurm.schedmd.com/>`-managed high-performance computing cluster.
+We designed this pipeline to use a `Slurm <https://slurm.schedmd.com/>`_-managed high-performance computing cluster.
 The main pipeline takes MRI data in DICOM format and utilizes BIDS-Apps to output common preprocessing 
 derivatives, processed derivatives, connectivity analyses, and other quantified microstructure measures and images. 
 
@@ -14,12 +14,12 @@ We assume here that you have followed the `installation guide<Install>` to make 
 
 
 Once you have your DICOMs in a consistent directory structure (i.e. project/participant/session/series/DICOM/*dcm),
-you can start modifying your :ref:`heuristic.py<Heuristics>` file (here named ${project}_heuristic.py). With your final heuristic,
+you can start modifying your :ref:`heuristic.py <Heuristics>`_ file (here named ${project}_heuristic.py). With your final heuristic,
 you are ready to run the first part of the pipeline:
 
 
 Since our use case for this pipeline is primarily for ongoing data collection, we split the pipeline into separate steps.
-With the exception of `Step 1<https://github.com/mrfil/7T-mri-pipeline-hpc/slurm_proc_7T_CUPS_step1.sh>`, these steps do are intended to be run in parallel.
+With the exception of `Step 1 <https://github.com/mrfil/7T-mri-pipeline-hpc/slurm_proc_7T_CUPS_step1.sh>`_, these steps do are intended to be run in parallel.
 This allows for a faster turnaround time for processing if your cluster is able to process all sessions from one day before the next sessions begin processing.
 *It is unlikely that this is the case for the functional stream due to processes stalling in Freesurfer recon-all*
 
