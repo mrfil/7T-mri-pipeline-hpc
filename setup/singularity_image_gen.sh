@@ -35,7 +35,7 @@ cd ./ubuntu-jqjo
 docker build -t localhost:5000/ubuntu-jqjo:0.2 .
 docker push localhost:5000/ubuntu-jqjo:0.2
 cd ../
-SINGULARITY_NOHTTPS=1 singularity build ubuntu-jqjo-v0.2.sif docker://localhost:5000/ubuntu-jqjo:0.2
+SINGULARITY_NOHTTPS=1 singularity build ubuntu-jqjo.sif docker://localhost:5000/ubuntu-jqjo:0.2
 
 # Follow directions to build Docker images for the following:
 # https://github.com/pinkeen/docker-html-to-pdf

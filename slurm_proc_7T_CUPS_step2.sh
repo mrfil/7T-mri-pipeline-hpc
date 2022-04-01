@@ -68,13 +68,13 @@ sesname="ses-"${session}
 	#fmriprep
 	echo "Running fmriprep on $subject $sesname"
 
-	${scripts}/project_doc.sh ${project} ${subject} ${sesname} "fmriprep" "no"
+        SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/project_doc.sh ${project} ${subject} ${sesname} "fmriprep" "21.0.0"
 	if [ "${longitudinal}" == "yes" ];
 	then 
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITYENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v20.2.6.sif fmriprep /datain/bids /datain/bids/derivatives participant --participant-label ${subject} --longitudinal --use-aroma --output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITYENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v21.0.0.sif fmriprep /datain/bids /datain/bids/derivatives participant --participant-label ${subject} --longitudinal --use-aroma --output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
 	elif [ "${longitudinal}" == "no" ];
 	then
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITYENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v20.2.6.sif fmriprep /datain/bids /datain/bids/derivatives participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym:res-1,T1w:res-1,fsnative} -w /paulscratch --ignore t2w --use-aroma --fs-license-file /opt/freesurfer/license.txt
+	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITYENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v21.0.0.sif fmriprep /datain/bids /datain/bids/derivatives participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym:res-1,T1w:res-1,fsnative} -w /paulscratch --ignore t2w --use-aroma --fs-license-file /opt/freesurfer/license.txt
 	fi
 
 
@@ -107,7 +107,7 @@ sesname="ses-"${session}
 
 
 		#xcpEngine 36p
-		$scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no"
+		SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no" "1.2.4"
 		cp ${scripts}/xcpEngineDesigns/*_gh.dsn ${projDir}/
 		cd ${projDir}
 		SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity run --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-1.2.4.sif -d /data/fc-36p_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_minimal_func -r /data/bids -i /tmpdir
@@ -132,7 +132,6 @@ sesname="ses-"${session}
         echo "xcpEngine fc-36p despike started $NOW" >> ${scripts}/fulltimer.txt
 
         #xcpEngine 36p despike
-        $scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no"
         cd ${projDir}
         SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity run --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-1.2.4.sif -d /data/fc-36p_despike_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_despike -r /data/bids -i /tmpdir
         chmod 2777 -R ${projDir}/bids/derivatives/xcp*
@@ -174,7 +173,6 @@ ${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} xcp36pdespike ${based
 		echo "xcpEngine fc-aroma started $NOW" >> ${scripts}/fulltimer.txt
 
 		#xcpEngine aroma
-		$scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no"
 		cd ${projDir}
 		SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity run --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-1.2.4.sif -d /data/fc-aroma_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma -r /data/bids -i /tmpdir
 		chmod 2777 -R ${projDir}/bids/derivatives/xcp*

@@ -18,6 +18,22 @@ BIDS-App containers
 
 Examples of how to run each containerized BIDS-App used in our pipeline
 
+The following variables must be set to those for your file structure on your machine:
+
+IMAGEDIR : The location of singularity_images built for the pipeline
+TEMPLATEFLOW_HOST_HOME : The location of a local copy of the TemplateFlow data to prevent errors fetching a copy 
+stmpdir & TMPSING : (Interchangeable) locations of a tmp directory for Singularity to use
+scachedir & CACHESING : (Interchangeable) locations of a cache directory for Singularity to use
+projDir : The location of your project's data. This includes bids as a subdirectory.
+CLEANSUBJECT : Participant label without "sub-" prefix
+CLEANSESSION : Session label without "ses-" prefix
+subject : BIDS style participant label with "sub-" prefix
+sesname & session : BIDS style session label with "ses-" prefix
+scripts : The location of the pipeline scripts
+
+.. note::
+    The above are all set via the pipeline script based on argument inputs from the shell command. 
+
 
 MRIQC - Anatomical & Functional Quality Control
 ***********************************************
@@ -54,9 +70,37 @@ fMRIPrep - Anatomical & Functional Preprocessing
 XCPEngine - Correlation-based resting-state functional connectivity analysis
 ****************************************************************************
 
+
 Correlation-based resting-state functional connectivity analysis in multiple atlases.
 Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation
 
+Setup XCPEngine Workflow
+========================
+
+You must first create your `cohort csv <https://xcpengine.readthedocs.io/config/cohort.html#functional-processing>`_ to specify image id tags and which images to ingress for processing. We create these as part of the pipeline with:
+
+.. code-block:: bash
+   
+   func_cohort_maker.sh ${subject} ${sesname} yes
+
+You will also need `design files <https://xcpengine.readthedocs.io/config/design.html#pipeline-design-file>`_ for your desired XCPEngine pipeline (`available here <https://github.com/PennLINC/xcpEngine/tree/master/designs>`_)
+
+
+Running XCPEngine Workflow
+==========================
+
+.. code-block:: bash
+   
+   #running processing
+   singularity run --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-1.2.4.sif \
+   -d /data/fc-36p_despike_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv \
+   -o /data/bids/derivatives/xcp/${sesname}/xcp_despike -r /data/bids -i /tmpdir 
+   
+   #get network-based statistics using matlab-R2019a.sif image & script from pipeline
+   singularity run --bind ${scripts}/spm12:/spmtoolbox,${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/xcp/${sesname}:/datain \
+   ${IMAGEDIR}/matlab-R2019a.sif /work/rsfcnbs.sh "xcp_despike" "${subject}"
+   
+A `more detailed tutorial <https://xcpengine.readthedocs.io/config/tutorial.html>`_ is available in the `XCPEngine documentation <https://xcpengine.readthedocs.io/index.html>`_
 QSIPrep - DWI preprocessing and reconstruction
 **********************************************
 
@@ -157,12 +201,14 @@ CUDA 10.2-accelerated FDT pipeline
 Usage: 
 
 .. code-block:: bash
+
     # Running SCFSL GPU tractography
     docker exec --gpus all -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
     -v /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt \
     -v /path/project/bids:/data mrfilbi/scfsl_gpu:0.3.2 /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
 
 .. code-block:: bash
+
     # Running SCFSL GPU tractography
     SINGULARITY_ENVLD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
     singularity exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
