@@ -21,7 +21,7 @@ singularity build qsiprep-v0.15.1.sif docker://pennbbl/qsiprep:0.15.1
 
 # See README.md for more information on 
 #provide def files for ubuntu-jq, python3
-sudo SINGULARITY_NOHTTPS=1 singularity build ubuntu-jq-0.1.sif defjq
+sudo SINGULARITY_NOHTTPS=1 singularity build ubuntu-jqjo.sif jqjo.def
 sudo SINGULARITY_NOHTTPS=1 singularity build python3.sif defpy3
 sudo SINGULARITY_NOHTTPS=1 singularity build laynii-2.0.0.sif layniidef
 sudo SINGULARITY_NOHTTPS=1 singularity build ashs-1.0.0.sif ashsdef
