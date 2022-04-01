@@ -40,6 +40,9 @@ Step 1 - conversion to BIDS, MP2RAGE denoising, and MRIQC
 
 After this has completed - technically after the MRIQC processing begins - you can queue the rest of the steps for processing as appropriate for your dataset.
 
+.. note::
+    Using FreeSurfer for QSIprep will require that portion of Step 2 to finish first!
+
 Step 2 - functional MRI stream
 ------------------------------
 
@@ -77,6 +80,7 @@ Step 3 - diffusion MRI stream
 *Docker*
 
 .. code-block:: bash
+
     # Running SCFSL GPU tractography
     docker exec --gpus all -e LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
     -v /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt \
@@ -85,6 +89,7 @@ Step 3 - diffusion MRI stream
 *Singularity*
 
 .. code-block:: bash
+
     # Running SCFSL GPU tractography
     SINGULARITY_ENVLD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
     singularity exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
