@@ -141,7 +141,7 @@ else
 
 	if [ "${fieldmaps}" == "yes" ];
 	then
-	    SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jq-0.1.sif /scripts/jsoncrawler.sh /data/bids ${sesname} ${subject}
+	    SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/jsoncrawler.sh /data/bids ${sesname} ${subject}
 	fi
 	
 	cd ${projDir}/bids/${subject}/${sesname}/anat/
