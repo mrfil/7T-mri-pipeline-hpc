@@ -130,7 +130,7 @@ else
 
 	#heudiconv
 	echo "Running heudiconv"
-	${scripts}/project_doc.sh ${project} ${subject} ${sesname} "heudiconv" "yes"
+	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/project_doc.sh ${project} ${subject} ${sesname} "heudiconv" "yes" "0.9.0"
 	ses=${sesname:4}
 	sub=${subject:4}
 	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-0.9.0.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite 
@@ -203,7 +203,7 @@ else
         mv ./ndi_out/phs.nii ./ndi_out/${subject}_${sesname}_ndi_phs_fp2.nii
         mv ./ndi_out/qsm.nii ./ndi_out/${subject}_${sesname}_ndi_qsm_fp2.nii
 
-	
+	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/project_doc.sh ${project} ${subject} ${sesname} "mriqc" "yes" "0.16.1"
 	echo "Running mriqc"
 	TEMPLATEFLOW_HOST_HOME=$IMAGEDIR/templateflow
         export SINGULARITYENV_TEMPLATEFLOW_HOME="/templateflow"
