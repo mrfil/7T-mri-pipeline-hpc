@@ -4,7 +4,7 @@
 Citing
 ------
 
-This pipeline was adapted by Paul B. Camacho from the BIC 3T MRI Pipeline written by Paul B Camacho and Evan Dean Anderson.
+This pipeline was adapted by Paul B. Camacho from the BIC 3T MRI Pipeline written by Paul B Camacho and Evan Dean Anderson. Quality control and network-based metric HTML report generation and exploratory regression report generation (https://github.com/mrfil/html-qc-reports) written by Nishant Bhamidipati and Paul B Camacho.
 We acknowledge the members of the Carle-Illinois Advanced Imaging Center's first 7T population study (CUPS) steering committee and working group:
 
 * Patricia M Jones
