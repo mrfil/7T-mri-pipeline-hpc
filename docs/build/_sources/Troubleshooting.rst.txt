@@ -11,12 +11,12 @@ Singularity cache and tmp
 -------------------------
 Cache directory Error: "FATAL:   While performing build: conveyor failed to get: Error writing blob: write /tmp/bundle-temp-<bundlenumber>/oci-put-blob<blobnumber>>: no space left on device"
 
-Solution: Declare the variables SINGULARITY_CACHEDIR and SINGULARITY_TMPDIR before your singularity build command as follows:
+Solution: Declare the variables SINGULARITY_CACHEDIR and SINGULARITY_TMPDIR before your apptainer build command as follows:
 
 .. code-block:: bash
 
-    mkdir /path/to/singularity_images/SINGCACHE && mkdir /path/to/singularity_images/TMPSING
-    SINGULARITY_CACHEDIR=/path/to/singularity_images/SINGCACHE SINGULARITY_TMPDIR=/path/to/singularity_images/SINGTMP singularity build yourimage.sif docker://organization/image:tag
+    mkdir /path/to/apptainer_images/SINGCACHE && mkdir /path/to/apptainer_images/TMPSING
+    SINGULARITY_CACHEDIR=/path/to/apptainer_images/SINGCACHE SINGULARITY_TMPDIR=/path/to/apptainer_images/SINGTMP apptainer build yourimage.sif docker://organization/image:tag
 
 SquashFS-tools
 --------------
@@ -27,11 +27,11 @@ Solution: Compile squashfs-tools locally from GitHub - https://github.com/plough
 
 .. code-block:: bash
     
-    cd /path/to/singularity_images/
+    cd /path/to/apptainer_images/
     git clone https://github.com/plougher/squashfs-tools.git
     cd squashfs-tools/squashfs-tools
     make
-    export PATH=$PATH:/path/to/singularity_images/squashfs-tools/squashfs-tools
+    export PATH=$PATH:/path/to/apptainer_images/squashfs-tools/squashfs-tools
 
 
 Container running
@@ -89,12 +89,12 @@ Fix use your own pre-downloaded templateflow directory:
 
 .. code-block:: bash
 
-    ls /path/to/singularity_images/templateflow
+    ls /path/to/apptainer_images/templateflow
       tpl-Fischer344  tpl-MNI152NLin2009cAsym  tpl-MNIInfant         tpl-PNC
       tpl-fsaverage   tpl-MNI152NLin2009cSym   tpl-MNIPediatricAsym  tpl-RESILIENT
       tpl-fsLR        tpl-MNI152NLin6Asym      tpl-NKI               tpl-UNCInfant
       tpl-MNI152Lin   tpl-MNI152NLin6Sym       tpl-OASIS30ANTs       tpl-WHS
     
-    export TEMPLATEFLOW_HOST_HOME=/path/to/singularity_images/templateflow
+    export TEMPLATEFLOW_HOST_HOME=/path/to/apptainer_images/templateflow
     SINGULARITY_ENVTEMPLATEFLOW_HOME=/opt/templateflow
-    SINGULARITY_ENVTEMPLATEFLOW_HOME=/opt/templateflow singularity run --nv -B ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITY_ENVTEMPLATEFLOW_HOME},./bids:/data,./bids/derivatives/smriprep:/out,/path/to/singularity_images/license.txt:/opt/freesurfer/license.txt /path/to/singularity_images/smriprep-fastsurfer_dev.sif /data/ /out/ --fs-license-file /opt/freesurfer/license.txt participant --participant-label sub-<participantIDhere>
+    SINGULARITY_ENVTEMPLATEFLOW_HOME=/opt/templateflow apptainer run --nv -B ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITY_ENVTEMPLATEFLOW_HOME},./bids:/data,./bids/derivatives/smriprep:/out,/path/to/apptainer_images/license.txt:/opt/freesurfer/license.txt /path/to/apptainer_images/smriprep-fastsurfer_dev.sif /data/ /out/ --fs-license-file /opt/freesurfer/license.txt participant --participant-label sub-<participantIDhere>
