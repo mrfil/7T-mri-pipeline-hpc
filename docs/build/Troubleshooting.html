@@ -53,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQs</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#container-building">Container building</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#singularity-cache-and-tmp">Singularity cache and tmp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#apptainer-cache-and-tmp">Apptainer cache and tmp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#squashfs-tools">SquashFS-tools</a></li>
 </ul>
 </li>
@@ -96,12 +96,12 @@
 <span id="id1"></span><h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
 <section id="container-building">
 <h2>Container building<a class="headerlink" href="#container-building" title="Link to this heading"></a></h2>
-<section id="singularity-cache-and-tmp">
-<h3>Singularity cache and tmp<a class="headerlink" href="#singularity-cache-and-tmp" title="Link to this heading"></a></h3>
+<section id="apptainer-cache-and-tmp">
+<h3>Apptainer cache and tmp<a class="headerlink" href="#apptainer-cache-and-tmp" title="Link to this heading"></a></h3>
 <p>Cache directory Error: “FATAL:   While performing build: conveyor failed to get: Error writing blob: write /tmp/bundle-temp-&lt;bundlenumber&gt;/oci-put-blob&lt;blobnumber&gt;&gt;: no space left on device”</p>
-<p>Solution: Declare the variables SINGULARITY_CACHEDIR and SINGULARITY_TMPDIR before your apptainer build command as follows:</p>
+<p>Solution: Declare the variables APPTAINER_CACHEDIR and APPTAINER_TMPDIR before your apptainer build command as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>/path/to/apptainer_images/SINGCACHE<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>mkdir<span class="w"> </span>/path/to/apptainer_images/TMPSING
-<span class="nv">SINGULARITY_CACHEDIR</span><span class="o">=</span>/path/to/apptainer_images/SINGCACHE<span class="w"> </span><span class="nv">SINGULARITY_TMPDIR</span><span class="o">=</span>/path/to/apptainer_images/SINGTMP<span class="w"> </span>apptainer<span class="w"> </span>build<span class="w"> </span>yourimage.sif<span class="w"> </span>docker://organization/image:tag
+<span class="nv">APPTAINER_CACHEDIR</span><span class="o">=</span>/path/to/apptainer_images/SINGCACHE<span class="w"> </span><span class="nv">APPTAINER_TMPDIR</span><span class="o">=</span>/path/to/apptainer_images/SINGTMP<span class="w"> </span>apptainer<span class="w"> </span>build<span class="w"> </span>yourimage.sif<span class="w"> </span>docker://organization/image:tag
 </pre></div>
 </div>
 </section>
@@ -172,8 +172,8 @@ requests.exceptions.ConnectionError:<span class="w"> </span>HTTPSConnectionPool<
 <span class="w">  </span>tpl-MNI152Lin<span class="w">   </span>tpl-MNI152NLin6Sym<span class="w">       </span>tpl-OASIS30ANTs<span class="w">       </span>tpl-WHS
 
 <span class="nb">export</span><span class="w"> </span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="o">=</span>/path/to/apptainer_images/templateflow
-<span class="nv">SINGULARITY_ENVTEMPLATEFLOW_HOME</span><span class="o">=</span>/opt/templateflow
-<span class="nv">SINGULARITY_ENVTEMPLATEFLOW_HOME</span><span class="o">=</span>/opt/templateflow<span class="w"> </span>apptainer<span class="w"> </span>run<span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span><span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">SINGULARITY_ENVTEMPLATEFLOW_HOME</span><span class="si">}</span>,./bids:/data,./bids/derivatives/smriprep:/out,/path/to/apptainer_images/license.txt:/opt/freesurfer/license.txt<span class="w"> </span>/path/to/apptainer_images/smriprep-fastsurfer_dev.sif<span class="w"> </span>/data/<span class="w"> </span>/out/<span class="w"> </span>--fs-license-file<span class="w"> </span>/opt/freesurfer/license.txt<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span>sub-&lt;participantIDhere&gt;
+<span class="nv">APPTAINER_ENVTEMPLATEFLOW_HOME</span><span class="o">=</span>/opt/templateflow
+<span class="nv">APPTAINER_ENVTEMPLATEFLOW_HOME</span><span class="o">=</span>/opt/templateflow<span class="w"> </span>apptainer<span class="w"> </span>run<span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span><span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">APPTAINER_ENVTEMPLATEFLOW_HOME</span><span class="si">}</span>,./bids:/data,./bids/derivatives/smriprep:/out,/path/to/apptainer_images/license.txt:/opt/freesurfer/license.txt<span class="w"> </span>/path/to/apptainer_images/smriprep-fastsurfer_dev.sif<span class="w"> </span>/data/<span class="w"> </span>/out/<span class="w"> </span>--fs-license-file<span class="w"> </span>/opt/freesurfer/license.txt<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span>sub-&lt;participantIDhere&gt;
 </pre></div>
 </div>
 </section>
