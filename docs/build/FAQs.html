@@ -1,0 +1,192 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FAQs &mdash; 7T MRI Pipeline HPC 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e259d695"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting" href="Troubleshooting.html" />
+    <link rel="prev" title="Install" href="Install.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            7T MRI Pipeline HPC
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="About.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Main-Pipeline.html">Main Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Sub-Pipelines.html">Sub-Pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Heuristics.html">Heuristics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">FAQs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-build-with-docker">How to build with Docker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-build-with-apptainer">How to build with Apptainer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual-Correction.html">Manual-Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Requests.html">Requests</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">7T MRI Pipeline HPC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">FAQs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/FAQs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="faqs">
+<span id="id1"></span><h1>FAQs<a class="headerlink" href="#faqs" title="Link to this heading"></a></h1>
+<section id="how-to-build-with-docker">
+<h2>How to build with Docker<a class="headerlink" href="#how-to-build-with-docker" title="Link to this heading"></a></h2>
+<p>From a Dockerfile:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>path/to/Dockerfile
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>organization/image:tag<span class="w"> </span>.
+</pre></div>
+</div>
+<p><a class="reference external" href="https://docs.docker.com/engine/reference/builder/#format">More information</a></p>
+<p>Example Dockerfile:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#base image ubuntu 20.04​</span>
+FROM<span class="w"> </span>ubuntu:20.04
+<span class="c1"># Disable Prompt During Packages Installation</span>
+ARG<span class="w"> </span><span class="nv">DEBIAN_FRONTEND</span><span class="o">=</span>noninteractive
+<span class="c1"># Update Ubuntu Software repository &amp; install python3​</span>
+RUN<span class="w"> </span>apt-get<span class="w"> </span>update
+RUN<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>vim<span class="w"> </span>nano<span class="w"> </span>python3<span class="w"> </span>python3-pip
+
+<span class="c1"># Install python3 packages with pip3</span>
+RUN<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>numpy,<span class="w"> </span>pandas,<span class="w"> </span>matplotlib,<span class="w"> </span>seaborn,<span class="w"> </span>scipy
+
+<span class="c1">#Environmental variables​</span>
+ENV<span class="w"> </span><span class="nv">VAR</span><span class="o">=</span><span class="s2">&quot;FOO&quot;</span>
+
+<span class="c1">#copy files​</span>
+COPY<span class="w"> </span>directory/in/build/context<span class="w"> </span>/opt/destination/in/image
+
+<span class="c1">#Working directory​</span>
+WORKDIR<span class="w"> </span>/opt/some/directory
+
+<span class="c1">#Entrypoint script for docker exec​</span>
+ENTRYPOINT<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>/usr/local/bin/python<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>From a Docker repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>pull<span class="w"> </span>organization/image:tag
+</pre></div>
+</div>
+</section>
+<section id="how-to-build-with-apptainer">
+<h2>How to build with Apptainer<a class="headerlink" href="#how-to-build-with-apptainer" title="Link to this heading"></a></h2>
+<p>From a <a class="reference external" href="https://apptainer-userdoc.readthedocs.io/en/latest/container_recipes.html">def recipe file</a> (requires sudo on most systems, some can bypass with –fakeroot):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apptainer<span class="w"> </span>build<span class="w"> </span>image.sif<span class="w"> </span>image.def
+</pre></div>
+</div>
+<p>Example def file:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>Bootstrap:<span class="w"> </span>docker
+From:<span class="w"> </span>ubuntu:20.04
+
+%files
+/directory/in/build/context
+/directory/in/build/context<span class="w"> </span>/opt/destination/in/image
+
+%environment
+<span class="nb">export</span><span class="w"> </span><span class="nv">VAR</span><span class="o">=</span><span class="s2">&quot;FOO&quot;</span>
+
+%runscript
+<span class="nb">exec</span><span class="w"> </span>/usr/local/bin/python<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+
+%post
+apt-get<span class="w"> </span>update
+apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>vim<span class="w"> </span>nano<span class="w"> </span>python3<span class="w"> </span>python3-pip
+pip3<span class="w"> </span>install<span class="w"> </span>numpy,<span class="w"> </span>pandas,<span class="w"> </span>matplotlib,<span class="w"> </span>seaborn,<span class="w"> </span>scipy
+</pre></div>
+</div>
+<p>From a Docker repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apptainer<span class="w"> </span>build<span class="w"> </span>imagename.sif<span class="w"> </span>docker://organization/image:tag
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Install.html" class="btn btn-neutral float-left" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Troubleshooting.html" class="btn btn-neutral float-right" title="Troubleshooting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Paul B Camacho, Evan D Anderson, Nishant Bhamidipati, Aaron T Anderson, Benjamin Zimmerman, Matthew S Moore, Ezra Paul Winter-Nelson, Maximillian K Egan, Brad P Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Main Pipeline &mdash; 7T MRI Pipeline HPC 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e259d695"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Sub-Pipelines" href="Sub-Pipelines.html" />
+    <link rel="prev" title="Usage" href="Usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            7T MRI Pipeline HPC
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="About.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Main Pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#inputs">Inputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#outputs">Outputs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preprocessing-derivatives">Preprocessing derivatives</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#anatomical-functional-preprocessing-fmriprep">Anatomical + Functional Preprocessing - fMRIPrep</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#diffusion-qsiprep">Diffusion - QSIPrep</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#analyses-derivatives">Analyses derivatives</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#functional-connectivity-xcpengine">Functional connectivity - XCPEngine</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Diffusion - QSIPrep</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#metrics">Metrics:</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#network-based-statistics">Network-based statistics</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quality-control-metrics">Quality Control Metrics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-your-dataset-for-sharing">Preparing your dataset for sharing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing-optional">FSL DTI probabilistic tractography from QSIPrep Preprocessing (Optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#optional-html-quality-control-report-generator">(Optional) HTML Quality Control Report Generator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Sub-Pipelines.html">Sub-Pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Heuristics.html">Heuristics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual-Correction.html">Manual-Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Requests.html">Requests</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">7T MRI Pipeline HPC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Main Pipeline</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Main-Pipeline.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="main-pipeline">
+<span id="id1"></span><h1>Main Pipeline<a class="headerlink" href="#main-pipeline" title="Link to this heading"></a></h1>
+<p>To facilitate reproducible analyses at 7T, we developed a Apptainer container-based processing pipeline for MRI modalities commonly collected at our site (BIC + CI-AIC).
+These are compatible with the Brain Imaging Data Structure (BIDS) specification and are designed for deployment to high-performance computing clusters.
+This pipeline uses internally and externally developed BIDS-Apps converted from Docker images to Apptainer images or built directly as Apptainer images (see <a class="reference internal" href="Install.html#install"><span class="std std-ref">the installation guide</span></a>).
+The pipeline consists of an initial conversion and quality control metric generation step, followed by four steps run in parallel with the Slurm Workload Manager (SchedMD LLC, Lehi, Utah, USA).
+<em>Note that these scripts can also be run on Linux systems not managed by Slurm.</em></p>
+<p>The main pipeline consists of five sub-pipelines:</p>
+<ul class="simple">
+<li><p>Conversion to BIDS with HeuDiConv + basic quality control with MRIQC</p></li>
+<li><p>Functional preprocessing with fMRIPrep + resting-state analyses with XCPEngine</p></li>
+<li><p>Diffusion-weighted image preprocessing + reconstruction with QSIPrep</p></li>
+<li><p>Automated segmentation of hippocampal subfields with ASHS</p></li>
+<li><p>Quantitative susceptibility mapping</p></li>
+</ul>
+<section id="inputs">
+<h2>Inputs<a class="headerlink" href="#inputs" title="Link to this heading"></a></h2>
+<p>The pipeline assumes data to be in a DICOM format, with some uniformity of organization based on the project/subject/session/series structure.</p>
+</section>
+<section id="outputs">
+<h2>Outputs<a class="headerlink" href="#outputs" title="Link to this heading"></a></h2>
+<p>DICOMs are converted to BIDS-compatible NIFTIs and sidecar JSONs using HeuDiConv. These are used with BIDS-Apps to produce standard preprocessing derivatives,
+along with resting-state functional connectivity analyses and structural connectivity analyses.</p>
+<section id="preprocessing-derivatives">
+<h3>Preprocessing derivatives<a class="headerlink" href="#preprocessing-derivatives" title="Link to this heading"></a></h3>
+<section id="anatomical-functional-preprocessing-fmriprep">
+<h4>Anatomical + Functional Preprocessing - fMRIPrep<a class="headerlink" href="#anatomical-functional-preprocessing-fmriprep" title="Link to this heading"></a></h4>
+<p>Anatomical and functional image preprocessing</p>
+</section>
+<section id="diffusion-qsiprep">
+<h4>Diffusion - QSIPrep<a class="headerlink" href="#diffusion-qsiprep" title="Link to this heading"></a></h4>
+<p>Using the structural images and fieldmaps, we perform diffusion-weighted-image preprocessing</p>
+</section>
+</section>
+<section id="analyses-derivatives">
+<h3>Analyses derivatives<a class="headerlink" href="#analyses-derivatives" title="Link to this heading"></a></h3>
+<section id="functional-connectivity-xcpengine">
+<h4>Functional connectivity - XCPEngine<a class="headerlink" href="#functional-connectivity-xcpengine" title="Link to this heading"></a></h4>
+<p>Correlation-based resting-state functional connectivity analysis in multiple atlases.
+Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation</p>
+</section>
+<section id="id2">
+<h4>Diffusion - QSIPrep<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<p>Diffusion fiber orientation distribution fields reconstructoin and structural connectivity analysis in multiple atlases</p>
+<ul class="simple">
+<li><p>Constrained Spherical Deconvolution-based multi-shell multi-tissue w/ SIFT2 via MRtrix3 reconstruction workflow</p></li>
+<li><p>Generalized q-Sampling imaging via DSI Studio</p></li>
+<li><p>NODDI via AMICO python implementation</p></li>
+</ul>
+</section>
+</section>
+<section id="metrics">
+<h3>Metrics:<a class="headerlink" href="#metrics" title="Link to this heading"></a></h3>
+<p>Wherever possible, we combine quantifiable metrics from each modality to a common .csv with variable names that are more data science-friendly.</p>
+<section id="network-based-statistics">
+<h4>Network-based statistics<a class="headerlink" href="#network-based-statistics" title="Link to this heading"></a></h4>
+<p>CSD + SIFT2
+Ends with SC = SIFT2 CSD Structural connectivity network-based measures</p>
+<p><a class="reference external" href="https://qsiprep.readthedocs.io/en/latest/reconstruction.html#mrtrix-multishell-msmt">https://qsiprep.readthedocs.io/en/latest/reconstruction.html#mrtrix-multishell-msmt</a> - docs on   CSD reconstruction method + SIFT2 tractogram filtering
+<a class="reference external" href="https://sites.google.com/site/bctnet/">https://sites.google.com/site/bctnet/</a> - Matlab/python toolbox for nbs calculation</p>
+<blockquote>
+<div><p>These are more difficult to interpret in network science frameworks due to the weighting        scheme and our acquisition sampling scheme for DWI, probably not something to use in main       analyses yet.</p>
+</div></blockquote>
+<p>Example:</p>
+<p>GlobalEfficiencyAAL116SC
+GlobalEfficiencyBrainnetome246SC
+GlobalEfficiencyPower264SC</p>
+<p>GQI
+starts with atlas _ network based measure = GQI-based Structural connectivity network-based measures</p>
+<p><a class="reference external" href="https://qsiprep.readthedocs.io/en/latest/reconstruction.html#dsi-studio-gqi">https://qsiprep.readthedocs.io/en/latest/reconstruction.html#dsi-studio-gqi</a> - docs on GQI       reconstruction method
+<a class="reference external" href="https://sites.google.com/site/bctnet/">https://sites.google.com/site/bctnet/</a> - Matlab/python toolbox for nbs calculation used by the DSI Studio code employed in QSIPrep</p>
+<p>GQI is a model-free diffusion reconstruction method applicable for most DWI sampling schemes and better addresses the crossing fibres problem and other limitations of DTI. For more details, see Frank’s documentation: <a class="reference external" href="https://sites.google.com/a/labsolver.org/dsi-studio/Manual/diffusion-mri-indices">https://sites.google.com/a/labsolver.org/dsi-studio/Manual/diffusion-mri-indices</a></p>
+<p>Example:</p>
+<p>aal116_count_end_clustering_coeff_average_weighted
+aal116_count_end_density
+aal116_count_end_global_efficiency_weighted</p>
+<p>RSFC</p>
+<p>No underscores, starts with network-based measure, then atlas, ends with confound regression method = resting-state functional connectivity network-based measures
+<a class="reference external" href="https://xcp-d.readthedocs.io/en/latest/usage.html">https://xcp-d.readthedocs.io/en/latest/usage.html</a></p>
+<p><a class="reference external" href="https://sites.google.com/site/bctnet/">https://sites.google.com/site/bctnet/</a> - Matlab/python toolbox for nbs calculation</p>
+<p>Example:</p>
+<p>GlobalEfficiencyaal116aroma
+GlobalEfficiencyaal116despike
+GlobalEfficiencyaal116fc36p
+GlobalEfficiencyaal116scrub</p>
+</section>
+<section id="quality-control-metrics">
+<h4>Quality Control Metrics<a class="headerlink" href="#quality-control-metrics" title="Link to this heading"></a></h4>
+<p>fMRI + M2PRAGE
+<a class="reference external" href="https://mriqc.readthedocs.io/en/latest/measures.html">https://mriqc.readthedocs.io/en/latest/measures.html</a></p>
+<p>names appended with _t1w for MP2RAGE, _rest should be in most of these resting-state fMRI metric names in csv</p>
+<p>DWI
+<a class="reference external" href="https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data">https://qsiprep.readthedocs.io/en/latest/preprocessing.html#quality-control-data</a></p>
+<p>RSFC confound regression method + overall resting-state processing pipeline metrics
+<a class="reference external" href="https://xcpengine.readthedocs.io/qualitycontrol.html">https://xcpengine.readthedocs.io/qualitycontrol.html</a></p>
+</section>
+</section>
+<section id="preparing-your-dataset-for-sharing">
+<h3>Preparing your dataset for sharing<a class="headerlink" href="#preparing-your-dataset-for-sharing" title="Link to this heading"></a></h3>
+<p>An optional script is included in this repository for running pydeface on your BIDS dataset.
+This facilitates sharing data on databanks by removing identifying facial features from each image.
+You must specify which image modalities (e.g. T1w, T2w, FLAIR, etc.) to deface when running the script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>./apptainer_deface_bids.sh<span class="w"> </span>-p<span class="w"> </span>&lt;Project<span class="w"> </span>ID&gt;<span class="w"> </span>-m<span class="w"> </span>&lt;<span class="s2">&quot;T1w T2w FLAIR ...&quot;</span>&gt;<span class="w"> </span>-b<span class="w"> </span>&lt;base<span class="w"> </span>directory<span class="w"> </span><span class="k">for</span><span class="w"> </span>pipeline&gt;<span class="w"> </span>-t<span class="w"> </span>&lt;version<span class="w"> </span>of<span class="w"> </span>pipeline&gt;
+</pre></div>
+</div>
+</section>
+<section id="fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing-optional">
+<h3>FSL DTI probabilistic tractography from QSIPrep Preprocessing (Optional)<a class="headerlink" href="#fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing-optional" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires pre-existing FreeSurfer parcellation and FreeSurfer license.txt</p>
+<p>This workflow is intended to run on machines with CUDA 9.1 or CUDA 10.2 compatible GPUs.</p>
+</div>
+<p><em>Outputs</em></p>
+<p>In addition to the fdt_network_matrix produced by probtrackx2 for the masks
+derived from Freesurfer parcellation (generated in sMRIPrep/fMRIPrep),
+this sub-pipeline also outputs node-labeled csv files of the NxN streamline-weighted
+and ROI volume-weighted structural connectome.</p>
+<p><em>Performance</em></p>
+<p>From initial testing (on 23 datasets from 7T 1.6mm isotropic CMRR DWI):</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Benchmark with 7T DWI data</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+<col style="width: 18.8%" />
+<col style="width: 31.2%" />
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Host OS</p></th>
+<th class="head"><p>CUDA Version</p></th>
+<th class="head"><p>GPU</p></th>
+<th class="head"><p>CPU</p></th>
+<th class="head"><p>RAM</p></th>
+<th class="head"><p>Run time</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CentOS</p></td>
+<td><p>9.1</p></td>
+<td><p>Nvidia Tesla V100 16GB</p></td>
+<td><p>Intel Xeon Gold 6138 2.00GHz (80 threads)</p></td>
+<td><p>192GB</p></td>
+<td><p>30-35 minutes</p></td>
+</tr>
+</tbody>
+</table>
+<p>Peak GPU memory usage: 14435MiB / 16160MiB</p>
+<p>From testing 30 datasets from 3T 2.0mm isotropic CMRR DWI):</p>
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">Benchmark with 3T DWI data</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+<col style="width: 18.8%" />
+<col style="width: 31.2%" />
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Host OS</p></th>
+<th class="head"><p>CUDA Version</p></th>
+<th class="head"><p>GPU</p></th>
+<th class="head"><p>CPU</p></th>
+<th class="head"><p>RAM</p></th>
+<th class="head"><p>Run time</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CentOS</p></td>
+<td><p>9.1</p></td>
+<td><p>Nvidia Tesla V100 16GB</p></td>
+<td><p>Intel Xeon Gold 6138 2.00GHz (80 threads)</p></td>
+<td><p>192GB</p></td>
+<td><p>25-30 minutes</p></td>
+</tr>
+<tr class="row-odd"><td><p>CentOS</p></td>
+<td><p>10.2</p></td>
+<td><p>Nvidia Tesla V100 16GB</p></td>
+<td><p>Intel Xeon Gold 6138 2.00GHz (80 threads)</p></td>
+<td><p>192GB</p></td>
+<td><p>25-30 minutes</p></td>
+</tr>
+</tbody>
+</table>
+<p>Peak GPU memory usage: 13999MiB / 16160MiB</p>
+<p>Usage:</p>
+<p><em>Docker</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span>pennbbl/qsirecon:0.23.2<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>reorient_fslstd<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+<p><em>Apptainer</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.24.0.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>reorient_fslstd<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+</section>
+<section id="optional-html-quality-control-report-generator">
+<h3>(Optional) HTML Quality Control Report Generator<a class="headerlink" href="#optional-html-quality-control-report-generator" title="Link to this heading"></a></h3>
+<p>After running enough participant datasets through the pipeline, you can visualize quality control and network-based metrics using the  HTML QC Reports python tool developed by Nishant Bhamidipati and Paul Camacho <a class="reference external" href="https://github.com/mrfil/html-qc-reports">https://github.com/mrfil/html-qc-reports</a></p>
+<p>Use the pylearn.sif Apptainer image to run QC_Reporter.py</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>./apptainer_images
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mrfil/html-qc-reports.git
+<span class="nb">cd</span><span class="w"> </span>html-qc-reports
+apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-B<span class="w"> </span>/path/to/output/collect:/datain,./:/scripts<span class="w"> </span>pylearn.sif<span class="w"> </span>python3<span class="w"> </span>/scripts/QC_Reporter.py
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Sub-Pipelines.html" class="btn btn-neutral float-right" title="Sub-Pipelines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Paul B Camacho, Evan D Anderson, Nishant Bhamidipati, Aaron T Anderson, Benjamin Zimmerman, Matthew S Moore, Ezra Paul Winter-Nelson, Maximillian K Egan, Brad P Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

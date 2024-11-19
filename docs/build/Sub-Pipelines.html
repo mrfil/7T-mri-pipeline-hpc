@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sub-Pipelines &mdash; 7T MRI Pipeline HPC 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e259d695"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Heuristics" href="Heuristics.html" />
+    <link rel="prev" title="Main Pipeline" href="Main-Pipeline.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            7T MRI Pipeline HPC
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="About.html">About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Main-Pipeline.html">Main Pipeline</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Sub-Pipelines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bids-app-containers">BIDS-App containers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#mriqc-anatomical-functional-quality-control">MRIQC - Anatomical &amp; Functional Quality Control</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fmriprep-anatomical-functional-preprocessing">fMRIPrep - Anatomical &amp; Functional Preprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#xcpengine-correlation-based-resting-state-functional-connectivity-analysis">XCPEngine - Correlation-based resting-state functional connectivity analysis</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#running-xcp-d-workflow">Running XCP-D Workflow</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing">FSL DTI probabilistic tractography from QSIPrep Preprocessing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#qsiprep-preprocessing-reorient-to-fsl-space">QSIPrep preprocessing reorient to FSL space:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cuda-10-2-accelerated-fdt-pipeline">CUDA 10.2-accelerated FDT pipeline</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#optional-html-quality-control-report-generator">(Optional) HTML Quality Control Report Generator</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Heuristics.html">Heuristics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual-Correction.html">Manual-Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Requests.html">Requests</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">7T MRI Pipeline HPC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Sub-Pipelines</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Sub-Pipelines.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sub-pipelines">
+<span id="id1"></span><h1>Sub-Pipelines<a class="headerlink" href="#sub-pipelines" title="Link to this heading"></a></h1>
+<p>The main pipeline consists of five sub-pipelines:</p>
+<ul class="simple">
+<li><p>Conversion to BIDS with HeuDiConv + basic quality control with MRIQC</p></li>
+<li><p>Functional preprocessing with fMRIPrep + resting-state analyses with XCPEngine</p></li>
+<li><p>Diffusion-weighted image preprocessing + reconstruction with QSIPrep</p></li>
+<li><p>Automated segmentation of hippocampal subfields with ASHS</p></li>
+<li><p>Quantitative susceptibility mapping</p></li>
+</ul>
+<section id="bids-app-containers">
+<h2>BIDS-App containers<a class="headerlink" href="#bids-app-containers" title="Link to this heading"></a></h2>
+<p>Examples of how to run each containerized BIDS-App used in our pipeline</p>
+<p>The following variables must be set to those for your file structure on your machine:</p>
+<p>IMAGEDIR : The location of apptainer_images built for the pipeline
+TEMPLATEFLOW_HOST_HOME : The location of a local copy of the TemplateFlow data to prevent errors fetching a copy
+stmpdir &amp; TMPSING : (Interchangeable) locations of a tmp directory for Apptainer to use
+scachedir &amp; CACHESING : (Interchangeable) locations of a cache directory for Apptainer to use
+projDir : The location of your project’s data. This includes bids as a subdirectory.
+CLEANSUBJECT : Participant label without “sub-” prefix
+CLEANSESSION : Session label without “ses-” prefix
+subject : BIDS style participant label with “sub-” prefix
+sesname &amp; session : BIDS style session label with “ses-” prefix
+scripts : The location of the pipeline scripts</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The above are all set via the pipeline script based on argument inputs from the shell command.</p>
+</div>
+<section id="mriqc-anatomical-functional-quality-control">
+<h3>MRIQC - Anatomical &amp; Functional Quality Control<a class="headerlink" href="#mriqc-anatomical-functional-quality-control" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">APPTAINERENV_TEMPLATEFLOW_HOME</span><span class="si">}</span>,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids:/data,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/mriqc:/out<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/mriqc-v24.0.2.sif<span class="w"> </span>/data<span class="w"> </span>/out<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">CLEANSUBJECT</span><span class="si">}</span><span class="w"> </span>--session-id<span class="w"> </span><span class="si">${</span><span class="nv">CLEANSESSION</span><span class="si">}</span><span class="w"> </span>-v<span class="w"> </span>--no-sub
+</pre></div>
+</div>
+</section>
+<section id="fmriprep-anatomical-functional-preprocessing">
+<h3>fMRIPrep - Anatomical &amp; Functional Preprocessing<a class="headerlink" href="#fmriprep-anatomical-functional-preprocessing" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">APPTAINERENV_TEMPLATEFLOW_HOME</span><span class="si">}</span><span class="w"> </span>-v<span class="w"> </span><span class="nv">$IMAGEDIR</span>/license.txt:/opt/freesurfer/license.txt<span class="w"> </span>-v<span class="w"> </span><span class="nv">$TMPSING</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/datain<span class="w"> </span>nipreps/fmriprep:24.1.1<span class="w"> </span>fmriprep<span class="w"> </span>/datain/bids<span class="w"> </span>/datain/bids/derivatives/fmriprep<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span>--output-spaces<span class="w"> </span><span class="o">{</span>MNI152NLin2009cAsym,T1w,fsnative<span class="o">}</span><span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>--fs-license-file<span class="w"> </span>/opt/freesurfer/license.txt
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">APPTAINERENV_TEMPLATEFLOW_HOME</span><span class="si">}</span>,<span class="nv">$IMAGEDIR</span>/license.txt:/opt/freesurfer/license.txt,<span class="nv">$TMPSING</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/datain<span class="w"> </span><span class="nv">$IMAGEDIR</span>/fmriprep-v24.1.1.sif<span class="w"> </span>fmriprep<span class="w"> </span>/datain/bids<span class="w"> </span>/datain/bids/derivatives/fmriprep<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span>--output-spaces<span class="w"> </span><span class="o">{</span>MNI152NLin2009cAsym,T1w,fsnative<span class="o">}</span><span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>--fs-license-file<span class="w"> </span>/opt/freesurfer/license.txt
+</pre></div>
+</div>
+<p><em>If you do not have fMRI data, use the –anat-only argument</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">APPTAINERENV_TEMPLATEFLOW_HOME</span><span class="si">}</span><span class="w"> </span>-v<span class="w"> </span><span class="nv">$IMAGEDIR</span>/license.txt:/opt/freesurfer/license.txt<span class="w"> </span>-v<span class="w"> </span><span class="nv">$TMPSING</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/datain<span class="w"> </span>nipreps/fmriprep:24.1.1<span class="w"> </span>fmriprep<span class="w"> </span>/datain/bids<span class="w"> </span>/datain/bids/derivatives/fmriprep<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span>--output-spaces<span class="w"> </span><span class="o">{</span>MNI152NLin2009cAsym,T1w,fsnative<span class="o">}</span><span class="w"> </span>--anat-only<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>--fs-license-file<span class="w"> </span>/opt/freesurfer/license.txt
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">TEMPLATEFLOW_HOST_HOME</span><span class="si">}</span>:<span class="si">${</span><span class="nv">APPTAINERENV_TEMPLATEFLOW_HOME</span><span class="si">}</span>,<span class="nv">$IMAGEDIR</span>/license.txt:/opt/freesurfer/license.txt,<span class="nv">$TMPSING</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/datain<span class="w"> </span><span class="nv">$IMAGEDIR</span>/fmriprep-v24.1.1.sif<span class="w"> </span>fmriprep<span class="w"> </span>/datain/bids<span class="w"> </span>/datain/bids/derivatives/fmriprep<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span>--output-spaces<span class="w"> </span><span class="o">{</span>MNI152NLin2009cAsym,T1w,fsnative<span class="o">}</span><span class="w"> </span>--anat-only<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>--fs-license-file<span class="w"> </span>/opt/freesurfer/license.txt
+</pre></div>
+</div>
+</section>
+<section id="xcpengine-correlation-based-resting-state-functional-connectivity-analysis">
+<h3>XCPEngine - Correlation-based resting-state functional connectivity analysis<a class="headerlink" href="#xcpengine-correlation-based-resting-state-functional-connectivity-analysis" title="Link to this heading"></a></h3>
+<p>Correlation-based resting-state functional connectivity analysis in multiple atlases.
+Amplitude of Low Frequency Fluctuations (ALFF) and regional homogeneity (REHO) also quantified for each parcellation</p>
+<section id="running-xcp-d-workflow">
+<h4>Running XCP-D Workflow<a class="headerlink" href="#running-xcp-d-workflow" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#running processing</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>-B<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data,<span class="nv">$TMPSING</span>:/tmpdir<span class="w"> </span><span class="nv">$IMAGEDIR</span>/xcp_d-v0.10.0.sif<span class="w"> </span><span class="se">\</span>
+--participant_label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span>--nthreads<span class="w"> </span><span class="nv">$num_cpus</span><span class="w"> </span><span class="se">\</span>
+--omp-nthreads<span class="w"> </span><span class="k">$((</span><span class="nv">num_cpus</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">2</span><span class="k">))</span><span class="w"> </span>--input-type<span class="w"> </span>fmriprep<span class="w"> </span>--smoothing<span class="w"> </span><span class="nv">$SMOOTHING</span><span class="w"> </span>-p<span class="w"> </span><span class="si">${</span><span class="nv">CONFOUND_REGRESSION</span><span class="si">}</span><span class="w"> </span><span class="se">\</span>
+-f<span class="w"> </span><span class="m">0</span><span class="w"> </span>-w<span class="w"> </span><span class="s2">&quot;/sing_scratch&quot;</span><span class="w"> </span>--notrack<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span><span class="se">\</span>
+/data/<span class="si">${</span><span class="nv">DERIVATIVES_DIR</span><span class="si">}</span>/fmriprep<span class="w"> </span>/data/<span class="si">${</span><span class="nv">DERIVATIVES_DIR</span><span class="si">}</span><span class="w"> </span>participant
+
+<span class="c1">#get network-based statistics using matlab-R2019a.sif image &amp; script from pipeline</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/spm12:/spmtoolbox,<span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/matlab:/work,<span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/2019_03_03_BCT:/bctoolbox,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/xcp/<span class="si">${</span><span class="nv">sesname</span><span class="si">}</span>:/datain<span class="w"> </span><span class="se">\</span>
+<span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/matlab-R2021a.sif<span class="w"> </span>/work/rsfcnbs.sh<span class="w"> </span><span class="s2">&quot;xcp_despike&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>A <a class="reference external" href="https://xcp_d.readthedocs.io/config/tutorial.html">more detailed tutorial</a> is available in the <a class="reference external" href="https://xcp_d.readthedocs.io/index.html">XCPEngine documentation</a>
+QSIPrep - DWI preprocessing and reconstruction
+<strong>******************************************</strong></p>
+<p>Using the structural images and fieldmaps, we perform diffusion-weighted-image preprocessing and structural connectivity analysis in multiple atlases</p>
+<p><em>Preprocessing</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span>pennbbl/qsiprep:0.24.0<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.24.0.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+<p><em>Reconstruction</em></p>
+<p>Constrained Spherical Deconvolution-based multi-shell multi-tissue w/ SIFT2 via MRtrix3 reconstruction workflow</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span>pennbbl/qsirecon:0.23.2<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>mrtrix_multishell_msmt_ACT-hsvs<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+
+<span class="c1">#calculate network-based statistics and save NxN matrices from .net</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/matlab:/work<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/2019_03_03_BCT:/bctoolbox<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/matlab-R2019a.sif<span class="w"> </span>/work/qsinbs.sh<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$subject</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sesname</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsirecon-v0.23.2.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>mrtrix_multishell_msmt_ACT-hsvs<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+
+<span class="c1">#calculate network-based statistics and save NxN matrices from .net</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/matlab:/work,<span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>/2019_03_03_BCT:/bctoolbox,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/matlab-R2019a.sif<span class="w"> </span>/work/qsinbs.sh<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$subject</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sesname</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<p>Generalized q-Sampling imaging via DSI Studio</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span>pennbbl/qsiprep:0.23.2<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w">  </span>--recon_spec<span class="w"> </span>dsi_studio_gqi<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+
+<span class="c1">#get network-based statistics to a csv from .mat</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>:/scripts<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon/<span class="si">${</span><span class="nv">subject</span><span class="si">}</span>/<span class="si">${</span><span class="nv">sesname</span><span class="si">}</span>/dwi:/datain<span class="w"> </span>-W<span class="w"> </span>/datain<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/pylearn.sif<span class="w"> </span>/scripts/gqimetrics.py
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.23.2.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>dsi_studio_gqi<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+
+<span class="c1">#get network-based statistics to a csv from .mat</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>:/scripts,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon/<span class="si">${</span><span class="nv">subject</span><span class="si">}</span>/<span class="si">${</span><span class="nv">sesname</span><span class="si">}</span>/dwi:/datain<span class="w"> </span>-W<span class="w"> </span>/datain<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/pylearn.sif<span class="w"> </span>/scripts/gqimetrics.py
+</pre></div>
+</div>
+<p>NODDI via AMICO python implementation</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span>pennbbl/qsiprep:0.23.2<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>amico_noddi<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+
+<span class="c1">#ROI-wise stats</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>:/scripts<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon/<span class="si">${</span><span class="nv">subject</span><span class="si">}</span>/<span class="si">${</span><span class="nv">sesname</span><span class="si">}</span>/dwi:/datanoddi<span class="w"> </span>mrfilbi/neurodoc.sif<span class="w"> </span>/scripts/noddi_stats.sh<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$subject</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sesname</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsirecon-v0.23.2.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>amico_noddi<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+
+<span class="c1">#ROI-wise stats</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">scripts</span><span class="si">}</span>:/scripts,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>/bids/derivatives/qsirecon/<span class="si">${</span><span class="nv">subject</span><span class="si">}</span>/<span class="si">${</span><span class="nv">sesname</span><span class="si">}</span>/dwi:/datanoddi<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/neurodoc.sif<span class="w"> </span>/scripts/noddi_stats.sh<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$subject</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$sesname</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing">
+<h3>FSL DTI probabilistic tractography from QSIPrep Preprocessing<a class="headerlink" href="#fsl-dti-probabilistic-tractography-from-qsiprep-preprocessing" title="Link to this heading"></a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires pre-existing FreeSurfer parcellation and FreeSurfer license.txt</p>
+</div>
+<section id="qsiprep-preprocessing-reorient-to-fsl-space">
+<h4>QSIPrep preprocessing reorient to FSL space:<a class="headerlink" href="#qsiprep-preprocessing-reorient-to-fsl-space" title="Link to this heading"></a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch<span class="w"> </span>-v<span class="w"> </span><span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsirecon-v0.23.2.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>reorient_fslstd<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">#run reconstruction workflow in QSIPrep</span>
+apptainer<span class="w"> </span>run<span class="w"> </span>--cleanenv<span class="w"> </span>--bind<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>:/imgdir,<span class="si">${</span><span class="nv">stmpdir</span><span class="si">}</span>:/paulscratch,<span class="si">${</span><span class="nv">projDir</span><span class="si">}</span>:/data<span class="w"> </span><span class="si">${</span><span class="nv">IMAGEDIR</span><span class="si">}</span>/qsiprep-v0.23.2.sif<span class="w"> </span>--fs-license-file<span class="w"> </span>/imgdir/license.txt<span class="w"> </span>/data/bids<span class="w"> </span>/data/bids/derivatives<span class="w"> </span>--recon_input<span class="w"> </span>/data/bids/derivatives/qsiprep<span class="w"> </span>--recon_spec<span class="w"> </span>reorient_fslstd<span class="w"> </span>--freesurfer-input<span class="w"> </span>/data/bids/derivatives/fmriprep/freesurfer<span class="w"> </span>--output-resolution<span class="w"> </span><span class="m">1</span>.6<span class="w"> </span>-w<span class="w"> </span>/paulscratch<span class="w"> </span>participant<span class="w"> </span>--participant-label<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span>
+</pre></div>
+</div>
+</section>
+<section id="cuda-10-2-accelerated-fdt-pipeline">
+<h4>CUDA 10.2-accelerated FDT pipeline<a class="headerlink" href="#cuda-10-2-accelerated-fdt-pipeline" title="Link to this heading"></a></h4>
+<p>Usage:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Running SCFSL GPU tractography</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>-e<span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/usr/local/cuda-10.2/lib64<span class="w"> </span><span class="se">\</span>
+-v<span class="w"> </span>/path/to/freesurfer/license.txt:/opt/freesurfer/license.txt<span class="w"> </span><span class="se">\</span>
+-v<span class="w"> </span>/path/project/bids:/data<span class="w"> </span>mrfilbi/scfsl_gpu:0.3.2<span class="w"> </span>/bin/bash<span class="w"> </span>/scripts/proc_fsl_connectome_fsonly.sh<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">session</span><span class="si">}</span>
+</pre></div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Running SCFSL GPU tractography</span>
+<span class="nv">APPTAINER_ENVLD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/usr/local/cuda-10.2/lib64<span class="w"> </span><span class="se">\</span>
+apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span>/path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data<span class="w"> </span><span class="se">\</span>
+/path/to/scfsl_gpu-v0.3.2.sif<span class="w"> </span>/bin/bash<span class="w"> </span>/scripts/proc_fsl_connectome_fsonly.sh<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">session</span><span class="si">}</span>
+</pre></div>
+</div>
+<p><em>Outputs</em></p>
+<p>In addition to the fdt_network_matrix produced by probtrackx2 for the masks
+derived from Freesurfer parcellation (generated in sMRIPrep/fMRIPrep),
+this sub-pipeline also outputs node-labeled csv files of the NxN streamline-weighted
+and ROI volume-weighted structural connectome.</p>
+<p><em>Performance</em></p>
+<p>From initial testing (on 23 datasets from 7T 1.6mm isotropic CMRR DWI):</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Benchmark with 7T DWI data</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+<col style="width: 18.8%" />
+<col style="width: 31.2%" />
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Host OS</p></th>
+<th class="head"><p>CUDA Version</p></th>
+<th class="head"><p>GPU</p></th>
+<th class="head"><p>CPU</p></th>
+<th class="head"><p>RAM</p></th>
+<th class="head"><p>Run time</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CentOS</p></td>
+<td><p>9.1</p></td>
+<td><p>Nvidia Tesla V100 16GB</p></td>
+<td><p>Intel Xeon Gold 6138 2.00GHz (80 threads)</p></td>
+<td><p>192GB</p></td>
+<td><p>30-35 minutes</p></td>
+</tr>
+</tbody>
+</table>
+<p>Peak GPU memory usage: 14435MiB / 16160MiB</p>
+<p>From testing 30 datasets from 3T 2.0mm isotropic CMRR DWI):</p>
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Benchmark with 3T DWI data</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+<col style="width: 18.8%" />
+<col style="width: 31.2%" />
+<col style="width: 12.5%" />
+<col style="width: 12.5%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Host OS</p></th>
+<th class="head"><p>CUDA Version</p></th>
+<th class="head"><p>GPU</p></th>
+<th class="head"><p>CPU</p></th>
+<th class="head"><p>RAM</p></th>
+<th class="head"><p>Run time</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CentOS</p></td>
+<td><p>9.1</p></td>
+<td><p>Nvidia Tesla V100 16GB</p></td>
+<td><p>Intel Xeon Gold 6138 2.00GHz (80 threads)</p></td>
+<td><p>192GB</p></td>
+<td><p>25-30 minutes</p></td>
+</tr>
+<tr class="row-odd"><td><p>CentOS</p></td>
+<td><p>10.2</p></td>
+<td><p>Nvidia Tesla V100 16GB</p></td>
+<td><p>Intel Xeon Gold 6138 2.00GHz (80 threads)</p></td>
+<td><p>192GB</p></td>
+<td><p>25-30 minutes</p></td>
+</tr>
+</tbody>
+</table>
+<p>Peak GPU memory usage: 13999MiB / 16160MiB</p>
+</section>
+<section id="optional-html-quality-control-report-generator">
+<h4>(Optional) HTML Quality Control Report Generator<a class="headerlink" href="#optional-html-quality-control-report-generator" title="Link to this heading"></a></h4>
+<p>After running enough participant datasets through the pipeline, you can visualize quality control and network-based metrics using the  HTML QC Reports python tool developed by Nishant Bhamidipati and Paul Camacho <a class="reference external" href="https://github.com/mrfil/html-qc-reports">https://github.com/mrfil/html-qc-reports</a></p>
+<p>Use the pylearn.sif Apptainer image to run QC_Reporter.py</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>./apptainer_images
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mrfil/html-qc-reports.git
+<span class="nb">cd</span><span class="w"> </span>html-qc-reports
+apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-B<span class="w"> </span>/path/to/output/collect:/datain,./:/scripts<span class="w"> </span>pylearn.sif<span class="w"> </span>python3<span class="w"> </span>/scripts/QC_Reporter.py
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Main-Pipeline.html" class="btn btn-neutral float-left" title="Main Pipeline" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Heuristics.html" class="btn btn-neutral float-right" title="Heuristics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Paul B Camacho, Evan D Anderson, Nishant Bhamidipati, Aaron T Anderson, Benjamin Zimmerman, Matthew S Moore, Ezra Paul Winter-Nelson, Maximillian K Egan, Brad P Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

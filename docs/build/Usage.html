@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; 7T MRI Pipeline HPC 0.3.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e259d695"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Main Pipeline" href="Main-Pipeline.html" />
+    <link rel="prev" title="About" href="About.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            7T MRI Pipeline HPC
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="About.html">About</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#step-1-conversion-to-bids-mp2rage-denoising-and-mriqc">Step 1 - conversion to BIDS, MP2RAGE denoising, and MRIQC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-2-functional-mri-stream">Step 2 - functional MRI stream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#automated-segmentation-of-hippocampal-subfields-quantitative-susceptibility-mapping">Automated segmentation of hippocampal subfields + Quantitative susceptibility mapping</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-3-diffusion-mri-stream">Step 3 - diffusion MRI stream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-running-freesurfer-informed-fsl-dti-tractography-on-gpu">(Optional) Running FreeSurfer-informed FSL DTI tractography on GPU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metrics-collation">Metrics Collation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-on-one-node">Running on one node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optional-html-quality-control-report-generator">(Optional) HTML Quality Control Report Generator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Main-Pipeline.html">Main Pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Sub-Pipelines.html">Sub-Pipelines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Heuristics.html">Heuristics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Install.html">Install</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQs.html">FAQs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Troubleshooting.html">Troubleshooting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Manual-Correction.html">Manual-Correction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Citing.html">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Requests.html">Requests</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">7T MRI Pipeline HPC</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<span id="id1"></span><h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<p>We designed this pipeline to use a <a class="reference external" href="https://slurm.schedmd.com/">Slurm</a>-managed high-performance computing cluster.
+The main pipeline takes MRI data in DICOM format and utilizes BIDS-Apps to output common preprocessing
+derivatives, processed derivatives, connectivity analyses, and other quantified microstructure measures and images.</p>
+<p>Setup for this pipeline is not currently automated due to the nature of building Apptainer images varying for different systems and users of those systems.
+We assume here that you have followed the <cite>installation guide&lt;Install&gt;</cite> to make your Apptainer images and transferred them to the cluster you are using.</p>
+<p>Once you have your DICOMs in a consistent directory structure (i.e. project/participant/session/series/DICOM/<a href="#id2"><span class="problematic" id="id3">*</span></a>dcm),
+you can start modifying your <a href="#id4"><span class="problematic" id="id5">:ref:`heuristic.py &lt;Heuristics&gt;`_</span></a> file (here named ${project}_heuristic.py). With your final heuristic,
+you are ready to run the first part of the pipeline:</p>
+<p>Since our use case for this pipeline is primarily for ongoing data collection, we split the pipeline into separate steps.
+With the exception of <a class="reference external" href="https://github.com/mrfil/7T-mri-pipeline-hpc/slurm_proc_7T_CUPS_step1.sh">Step 1</a>, these steps do are intended to be run in parallel.
+This allows for a faster turnaround time for processing if your cluster is able to process all sessions from one day before the next sessions begin processing.
+<em>It is unlikely that this is the case for the functional stream due to processes stalling in Freesurfer recon-all</em></p>
+<p>You should have an array of participant ID numbers (maximum is three digits for sbatch) for your study.
+<em>If you have more than 3 digits in your participant ID numbers, please see `dyno_PROJs.sh&lt;make this link&gt;`</em>
+This array is passed to sbatch with the -a argument. We recommend creating a copy of dyno.sh that is study-specific in case you handle multiple studies and need to control the versions of scripts/apps.
+You should do the same for the steps of the pipeline by changing the study label “CUPS” to your study ID.
+If your sessions do not following the A B C … naming convention, you will need to change the dyno.sh file to reflect the session naming convention.
+These commands are written to run from your scripts directory:</p>
+<section id="step-1-conversion-to-bids-mp2rage-denoising-and-mriqc">
+<h2>Step 1 - conversion to BIDS, MP2RAGE denoising, and MRIQC<a class="headerlink" href="#step-1-conversion-to-bids-mp2rage-denoising-and-mriqc" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>slurm_proc_7T_CUPS_step1.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+</pre></div>
+</div>
+<p>After this has completed - technically after the MRIQC processing begins - you can queue the rest of the steps for processing as appropriate for your dataset.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Using FreeSurfer for QSIprep will require that portion of Step 2 to finish first!</p>
+</div>
+</section>
+<section id="step-2-functional-mri-stream">
+<h2>Step 2 - functional MRI stream<a class="headerlink" href="#step-2-functional-mri-stream" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>slurm_proc_7T_CUPS_step2.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+</pre></div>
+</div>
+</section>
+<section id="automated-segmentation-of-hippocampal-subfields-quantitative-susceptibility-mapping">
+<h2>Automated segmentation of hippocampal subfields + Quantitative susceptibility mapping<a class="headerlink" href="#automated-segmentation-of-hippocampal-subfields-quantitative-susceptibility-mapping" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>slurm_proc_7T_CUPS_ashs.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>slurm_qsm_stats_rage.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+</pre></div>
+</div>
+</section>
+<section id="step-3-diffusion-mri-stream">
+<h2>Step 3 - diffusion MRI stream<a class="headerlink" href="#step-3-diffusion-mri-stream" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>slurm_proc_7T_CUPS_step3.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+</pre></div>
+</div>
+</section>
+<section id="optional-running-freesurfer-informed-fsl-dti-tractography-on-gpu">
+<h2>(Optional) Running FreeSurfer-informed FSL DTI tractography on GPU<a class="headerlink" href="#optional-running-freesurfer-informed-fsl-dti-tractography-on-gpu" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Requires pre-existing FreeSurfer parcellation and FreeSurfer license.txt.
+As of 03/15/2022, the main pipeline will can produce the QSIPrep preprocessing outputs in fsl space for this workflow.
+<em>These QSIPrep preprocessing outputs are required for the current script!</em>
+This workflow is intended to run on machines with CUDA 9.1 or CUDA 10.2 compatible GPUs.</p>
+</div>
+<p><em>Docker</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Running SCFSL GPU tractography</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>-e<span class="w"> </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/usr/local/cuda-10.2/lib64<span class="w"> </span><span class="se">\</span>
+-v<span class="w"> </span>/path/to/freesurfer/license.txt:/opt/freesurfer/license.txt<span class="w"> </span><span class="se">\</span>
+-v<span class="w"> </span>/path/project/bids:/data<span class="w"> </span>mrfilbi/scfsl_gpu:0.3.2<span class="w"> </span>/bin/bash<span class="w"> </span>/scripts/proc_fsl_connectome_fsonly.sh<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">session</span><span class="si">}</span>
+</pre></div>
+</div>
+<p><em>Apptainer</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Running SCFSL GPU tractography</span>
+<span class="nv">SINGULARITY_ENVLD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:/usr/local/cuda-10.2/lib64<span class="w"> </span><span class="se">\</span>
+apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>--nv<span class="w"> </span>-B<span class="w"> </span>/path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data<span class="w"> </span><span class="se">\</span>
+/path/to/scfsl_gpu-v0.3.2.sif<span class="w"> </span>/bin/bash<span class="w"> </span>/scripts/proc_fsl_connectome_fsonly.sh<span class="w"> </span><span class="si">${</span><span class="nv">subject</span><span class="si">}</span><span class="w"> </span><span class="si">${</span><span class="nv">session</span><span class="si">}</span>
+</pre></div>
+</div>
+</section>
+<section id="metrics-collation">
+<h2>Metrics Collation<a class="headerlink" href="#metrics-collation" title="Link to this heading"></a></h2>
+<p>As your dataset reaches a desired size for data quality monitoring or statistical analyses,
+you can combine the many metrics from the above BIDS-Apps to a one-line csv for each session for each participant:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>pipeline_collate.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+./collect.sh<span class="w"> </span>&lt;version&gt;<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;
+</pre></div>
+</div>
+<p>The collect.sh script takes these csvs for each participant and creates a group-level csv (output/PROJECTID/collect/).</p>
+</section>
+<section id="running-on-one-node">
+<h2>Running on one node<a class="headerlink" href="#running-on-one-node" title="Link to this heading"></a></h2>
+<p>To run the main pipeline and log processing times, run with Slurm <em>sbatch</em> as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sbatch<span class="w"> </span>-a<span class="w"> </span><span class="m">001</span>,002,003<span class="w"> </span>./dyno_PROJ_A.sh<span class="w"> </span>slurm_proc_7T_CUPS.sh<span class="w"> </span>&lt;PROJECTID&gt;<span class="w"> </span>&lt;base<span class="w"> </span>directory&gt;<span class="w"> </span>&lt;version&gt;
+</pre></div>
+</div>
+</section>
+<section id="optional-html-quality-control-report-generator">
+<h2>(Optional) HTML Quality Control Report Generator<a class="headerlink" href="#optional-html-quality-control-report-generator" title="Link to this heading"></a></h2>
+<p>After running enough participant datasets through the pipeline, you can visualize quality control and network-based metrics using the  HTML QC Reports python tool developed by Nishant Bhamidipati and Paul Camacho <a class="reference external" href="https://github.com/mrfil/html-qc-reports">https://github.com/mrfil/html-qc-reports</a></p>
+<p>Use the pylearn.sif Apptainer image to run QC_Reporter.py</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>./apptainer_images
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mrfil/html-qc-reports.git
+<span class="nb">cd</span><span class="w"> </span>html-qc-reports
+apptainer<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-B<span class="w"> </span>/path/to/output/collect:/datain,./:/scripts<span class="w"> </span>pylearn.sif<span class="w"> </span>python3<span class="w"> </span>/scripts/QC_Reporter.py
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="About.html" class="btn btn-neutral float-left" title="About" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Main-Pipeline.html" class="btn btn-neutral float-right" title="Main Pipeline" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Paul B Camacho, Evan D Anderson, Nishant Bhamidipati, Aaron T Anderson, Benjamin Zimmerman, Matthew S Moore, Ezra Paul Winter-Nelson, Maximillian K Egan, Brad P Sutton.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
