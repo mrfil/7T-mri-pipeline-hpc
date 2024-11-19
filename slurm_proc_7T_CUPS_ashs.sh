@@ -1,5 +1,7 @@
 #!/bin/bash
-#slurm_process_pipeline.sh
+# slurm_proc_7T_CUPS_ashs.sh
+#
+# This script runs after step 1 in the 7T CUPS pipeline. It runs ASHS on the input subject and session.
 
 while getopts :p:s:z:m:f:l:b:t: option; do
 	case ${option} in
@@ -13,22 +15,11 @@ while getopts :p:s:z:m:f:l:b:t: option; do
 	t) export version=$OPTARG ;;
 	esac
 done
-## takes project, subject, and session as inputs
 
-pilotdir=${base_dir}/original_location_of_images_from_XNAT
 IMAGEDIR=${base_dir}/apptainer_images
-tmpdir=${base_dir}/${version}/testing
 scripts=${base_dir}/${version}/scripts
-bids_out=${base_dir}/${version}/bids_only
-conn_out=${base_dir}/${version}/conn_out
-dataqc=${base_dir}/${version}/data_qc
 stmpdir=${base_dir}/${version}/scratch/stmp
 scachedir=${base_dir}/${version}/scratch/scache
-
-cd $pilotdir
-
-DIR=${CLEANPROJECT}/${CLEANSUBJECT}/${CLEANSESSION}
-
 
 ## setup our variables and change to the session directory
 
@@ -42,25 +33,24 @@ echo "${CLEANSESSION: -1}"
 session="${CLEANSESSION: -1}"
 echo ${session}
 project=${CLEANPROJECT}
-mkdir -p ${tmpdir}/${project}/${CLEANSUBJECT}/${session}
-cp -R ${pilotdir}/${DIR} ${tmpdir}/${project}/${CLEANSUBJECT}/${session}
 
 subject="sub-"${CLEANSUBJECT}
 sesname="ses-"${session}
 
-projDir=${tmpdir}/${project}
-scripts=${base_dir}/${version}/scripts
+projDir=${base_dir}/${version}/testing/${project}
 
 cd $projDir
 
 IMAGEDIR=${base_dir}/apptainer_images
-CACHESING=${scachedir}/${project}_${subject}_${sesname}_dcm2rsfc
-TMPSING=${stmpdir}/${project}_${subject}_${sesname}_dcm2rsfc
+CACHESING=${scachedir}/${project}_${subject}_${sesname}_ashs
+TMPSING=${stmpdir}/${project}_${subject}_${sesname}_ashs
 mkdir $CACHESING
 mkdir $TMPSING
 
 ses=${sesname:4}
 sub=${subject:4}
+
+echo "Running ASHS on ${subject} ${sesname}"
 
 export APPTAINERENV_ASHS_ROOT=/opt/ashs/ashs-1.0.0
 APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv \
@@ -70,3 +60,5 @@ $IMAGEDIR/ashs-1.0.0.sif $APPTAINERENV_ASHS_ROOT/bin/ashs_main.sh -a /opt/ashs/a
 -f /datain/bids/sourcedata/${subject}/${sesname}/anat/${subject}_${sesname}_acq-highreshippocampus_run-1_T2w.nii.gz \
 -w /datain/bids/derivatives/ashs/${subject}/${sesname} 
 
+rm -rf $CACHESING
+rm -rf $TMPSING

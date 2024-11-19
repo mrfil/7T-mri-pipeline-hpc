@@ -1,5 +1,7 @@
 #!/bin/bash
-#slurm_process_pipeline.sh
+# slurm_proc_7T_CUPS_step2.sh
+#
+# This script is the second step in the 7T CUPS pipeline. It runs fMRIPrep and XCP-D on the input subject and session.
 
 while getopts :p:s:z:m:f:l:b:t: option; do
 	case ${option} in
@@ -9,26 +11,15 @@ while getopts :p:s:z:m:f:l:b:t: option; do
 	m) export MINQC=$OPTARG ;;
 	f) export fieldmaps=$OPTARG ;;
 	l) export longitudinal=$OPTARG ;;
-	b) export based=$OPTARG ;;
+	b) export base_dir=$OPTARG ;;
 	t) export version=$OPTARG ;;
 	esac
 done
-## takes project, subject, and session as inputs
 
-pilotdir=${based}/original_location_of_images_from_XNAT
-IMAGEDIR=${based}/apptainer_images
-tmpdir=${based}/${version}/testing
-scripts=${based}/${version}/scripts
-bids_out=${based}/${version}/bids_only
-conn_out=${based}/${version}/conn_out
-dataqc=${based}/${version}/data_qc
-stmpdir=${based}/${version}/scratch/stmp
-scachedir=${based}/${version}/scratch/scache
-
-cd $pilotdir
-
-DIR=${CLEANPROJECT}/${CLEANSUBJECT}/${CLEANSESSION}
-
+IMAGEDIR=${base_dir}/apptainer_images
+scripts=${base_dir}/${version}/scripts
+stmpdir=${base_dir}/${version}/scratch/stmp
+scachedir=${base_dir}/${version}/scratch/scache
 
 ## setup our variables and change to the session directory
 
@@ -42,151 +33,88 @@ echo "${CLEANSESSION: -1}"
 session="${CLEANSESSION: -1}"
 echo ${session}
 project=${CLEANPROJECT}
-mkdir -p ${tmpdir}/${project}/${CLEANSUBJECT}/${session}
-cp -R ${pilotdir}/${DIR} ${tmpdir}/${project}/${CLEANSUBJECT}/${session}
 
 subject="sub-"${CLEANSUBJECT}
 sesname="ses-"${session}
 
-	projDir=${tmpdir}/${project}
-	scripts=${based}/${version}/scripts
+projDir=${base_dir}/${version}/testing/${project}
 
-	cd $projDir
+cd $projDir
 
-	IMAGEDIR=${based}/apptainer_images
-	CACHESING=${scachedir}/${project}_${subject}_${sesname}_dcm2rsfc
-	TMPSING=${stmpdir}/${project}_${subject}_${sesname}_dcm2rsfc
-	mkdir $CACHESING
-	mkdir $TMPSING
-	chmod 730 -R $CACHESING
-	chmod 730 -R $TMPSING
+IMAGEDIR=${base_dir}/apptainer_images
+CACHESING=${scachedir}/${project}_${subject}_${sesname}_rsfc
+TMPSING=${stmpdir}/${project}_${subject}_${sesname}_rsfc
+mkdir $CACHESING
+mkdir $TMPSING
+chmod 730 -R $CACHESING
+chmod 730 -R $TMPSING
 
-	ses=${sesname:4}
-	sub=${subject:4}
-	
-	TEMPLATEFLOW_HOST_HOME=$IMAGEDIR/templateflow
-        export APPTAINERENV_TEMPLATEFLOW_HOME="/templateflow"
-
-	NOW=$(date +"%m-%d-%Y-%T")
-	echo "fMRIPrep started $NOW" >> ${scripts}/fulltimer.txt
-
-	#fmriprep
-	echo "Running fmriprep on $subject $sesname"
-
-	${scripts}/project_doc.sh ${project} ${subject} ${sesname} "fmriprep" "no"
-	if [ "${longitudinal}" == "yes" ];
-	then 
-	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v22.0.1.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --longitudinal --use-aroma --output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
-	elif [ "${longitudinal}" == "no" ];
-	then
-	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v22.0.1.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym:res-1,T1w:res-1,fsnative} -w /paulscratch --ignore t2w --use-aroma --fs-license-file /opt/freesurfer/license.txt --skip_bids_validation
-	fi
+ses=${sesname:4}
+sub=${subject:4}
 
 
-	NOW=$(date +"%m-%d-%Y-%T")
-	echo "fMRIPrep finished $NOW" >> ${scripts}/fulltimer.txt
+# Get number of cpus from slurm, if not available, use 16
+if [ -z "$SLURM_CPUS_PER_TASK" ]; then
+	num_cpus=16
+else
+	num_cpus=$SLURM_CPUS_PER_TASK
+fi
 
-	chmod 2777 -R ${projDir}/bids/derivatives/fmriprep
-	
-	mkdir -p ${projDir}/bids/derivatives/qatools/${subject}
-	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv --bind ${projDir}/bids/derivatives:/datain,${IMAGEDIR}/license.txt:/opt/freesurfer/license.txt $IMAGEDIR/qatools-v1.2.sif --subjects_dir /datain/freesurfer --output_dir /datain/qatools/${subject} --subjects ${subject} --screenshots --screenshots-html --shape
-	
-	#print html?
-		
-	
-		#copy freesurfer to fmriprep so xcpEngine can find it
-		mkdir ./fmriprep/freesurfer
-		cp -R ./sourcedata/freesurfer/fsaverage ./fmriprep/freesurfer/fsaverage
-		cp -R ./sourcedata/freesurfer/${subject} ./fmriprep/freesurfer/${subject}	
-		chmod 2777 -R ${projDir}/bids/derivatives/fmriprep
-		cd ${projDir}
-
-		NOW=$(date +"%m-%d-%Y-%T")
-		echo "xcpEngine fc-36p started $NOW" >>	${scripts}/fulltimer.txt
-		
-		#generate xcpEngine cohorts for a new subject
-		${scripts}/func_cohort_maker.sh ${subject} ${sesname} yes
+TEMPLATEFLOW_HOST_HOME=$IMAGEDIR/templateflow
+export APPTAINERENV_TEMPLATEFLOW_HOME="/templateflow"
+# Set MPLCONFIGDIR to the scratch directory
+MPLCONFIGDIR=$TMPSING/matplotlib
+mkdir -p $MPLCONFIGDIR
+export APPTAINERENV_MPLCONFIGDIR="/sing_scratch/matplotlib"
 
 
-		#xcpEngine 36p
-		$scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no"
-		cp ${scripts}/xcpEngineDesigns/*_gh.dsn ${projDir}/
-		cd ${projDir}
-		APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-v1.2.4.sif -d /data/fc-36p_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_minimal_func -r /data/bids -i /tmpdir
-		chmod 2777 -R ${projDir}/bids/derivatives/xcp*
-		mv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/*quality.csv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/${subject}_${sesname}_quality_fc36p.csv
-		${scripts}/procd.sh ${project} xcp no ${subject} ${based}
+NOW=$(date +"%m-%d-%Y-%T")
+echo "fMRIPrep started $NOW" >> ${scripts}/fulltimer.txt
 
-		${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} xcp36p ${based}
+#fmriprep
+echo "Running fmriprep on $subject $sesname"
 
-		APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --cleanenv --no-home --contain --bind ${scripts}/spm12:/spmtoolbox,${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/xcp/${sesname}:/datain ${IMAGEDIR}/matlab-R2019a.sif /work/rsfcnbs.sh "xcp_minimal_func" "${subject}"
-		mkdir ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs
-		mkdir ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/fc36p
-		chmod 730 -R ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/fc36p
-		cp ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/*txt ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/fc36p/
-		
-
-		NOW=$(date +"%m-%d-%Y-%T")
-		echo "xcpEngine fc-36p finished $NOW" >> ${scripts}/fulltimer.txt
-		
-
-        NOW=$(date +"%m-%d-%Y-%T")
-        echo "xcpEngine fc-36p despike started $NOW" >> ${scripts}/fulltimer.txt
-
-        #xcpEngine 36p despike
-        $scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no"
-        cd ${projDir}
-        APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-v1.2.4.sif -d /data/fc-36p_despike_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_despike -r /data/bids -i /tmpdir
-        chmod 2777 -R ${projDir}/bids/derivatives/xcp*
-        mv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_despike/${subject}/*quality.csv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/${subject}_${sesname}_quality_despike.csv
+${scripts}/project_doc.sh ${project} ${subject} ${sesname} "fmriprep" "no"
+if [ "${longitudinal}" == "yes" ];
+then 
+APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall \
+--no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} \
+--bind $IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain \
+$IMAGEDIR/fmriprep-v23.2.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant \
+--participant-label ${subject} --longitudinal --use-aroma \
+--output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} \
+-w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+elif [ "${longitudinal}" == "no" ];
+then
+APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall \
+--no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} \
+--bind $IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain \
+$IMAGEDIR/fmriprep-v23.2.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant \
+--participant-label ${subject} --use-aroma \
+--output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} \
+-w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+fi
 
 
-        APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --cleanenv --no-home --contain --bind ${scripts}/spm12:/spmtoolbox,${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/xcp/${sesname}:/datain ${IMAGEDIR}/matlab-R2019a.sif /work/rsfcnbs.sh "xcp_despike" "${subject}"
-        mkdir ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/despike
-        chmod 730 -R ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/despike
-        cp ${projDir}/bids/derivatives/xcp/${sesname}/xcp_despike/${subject}/fcon/*txt ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/despike/
+NOW=$(date +"%m-%d-%Y-%T")
+echo "fMRIPrep finished $NOW" >> ${scripts}/fulltimer.txt
 
-        NOW=$(date +"%m-%d-%Y-%T")
-        echo "xcpEngine fc-36p despike finished $NOW" >> ${scripts}/fulltimer.txt
+chmod 730 -R ${projDir}/bids/derivatives/fmriprep
 
-
-		NOW=$(date +"%m-%d-%Y-%T")
-		echo "xcpEngine fc-36p_scrub started $NOW" >> ${scripts}/fulltimer.txt
-
-		#xcpEngine 36p_scrub
-		cd ${projDir}
-		APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-v1.2.4.sif -d /data/fc-36p_scrub_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_scrub -r /data/bids -i /tmpdir
-		mv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_scrub/${subject}/*quality.csv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/${subject}_${sesname}_quality_scrub.csv
-
-		APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv --bind ${scripts}/spm12:/spmtoolbox,${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/xcp/${sesname}:/datain ${IMAGEDIR}/matlab-R2019a.sif /work/rsfcnbs.sh "xcp_scrub" "${subject}" 
-		mkdir ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/scrub
-		chmod 730 -R ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/scrub
-		cp ${projDir}/bids/derivatives/xcp/${sesname}/xcp_scrub/${subject}/fcon/*txt ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/nbs/scrub/
-#		rm ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_func/${subject}/fcon/*txt
-
-		NOW=$(date +"%m-%d-%Y-%T")
-	
-		echo "xcpEngine fc-36p_scrub finished $NOW" >> ${scripts}/fulltimer.txt
-
-		NOW=$(date +"%m-%d-%Y-%T")
-		echo "xcpEngine fc-aroma started $NOW" >> ${scripts}/fulltimer.txt
-
-		#xcpEngine aroma
-		$scripts/project_doc.sh ${project} ${subject} ${sesname} "xcpengine" "no"
-		cd ${projDir}
-		APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv -B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcpengine-v1.2.4.sif -d /data/fc-aroma_gh.dsn -c /data/cohort_func_${subject}_${sesname}.csv -o /data/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma -r /data/bids -i /tmpdir
-		chmod 2777 -R ${projDir}/bids/derivatives/xcp*
-		mv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma/${subject}/*quality.csv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma/${subject}/${subject}_${sesname}_quality_aroma.csv 
-
-		${scripts}/procd.sh $project xcp no ${subject} ${based}
-		cp ${scripts}/projdoc.css ${based}/batchproc/${project}/${project}_sample.css
-
-		NOW=$(date +"%m-%d-%Y-%T")
-		echo "xcpEngine fc-aroma finished $NOW" >> ${scripts}/fulltimer.txt
-
-		APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv --bind ${scripts}/spm12:/spmtoolbox,${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/xcp/${sesname}:/datain ${IMAGEDIR}/matlab-R2019a.sif /work/rsfcnbs.sh "xcp_minimal_aroma" "${subject}" 
-		mkdir ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma/${subject}/fcon/nbs
-		chmod 730 -R ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma/${subject}/fcon/nbs
-		mv ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma/${subject}/fcon/*txt ${projDir}/bids/derivatives/xcp/${sesname}/xcp_minimal_aroma/${subject}/fcon/nbs/
+echo "Running FSQC on $subject $sesname"
+mkdir -p ${projDir}/bids/derivatives/qatools/${subject}
+APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv \
+--bind ${projDir}/bids/derivatives:/datain,${IMAGEDIR}/license.txt:/opt/freesurfer/license.txt $IMAGEDIR/fsqc-v2.1.1.sif \
+--subjects_dir /datain/freesurfer --output_dir /datain/fsqc/${subject} --subjects ${subject} \
+--screenshots --screenshots-html --shape
 
 
+
+# Run XCP-D
+echo "Running XCP-D on $subject $sesname"
+APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv \
+--bind ${projDir}/bids/derivatives:/datain,${IMAGEDIR}/license.txt:/opt/freesurfer/license.txt \
+$IMAGEDIR/xcp-d-v0.10.0.sif --participant_label ${subject} --nthreads $num_cpus \
+--omp-nthreads $((num_cpus / 2)) --input-type fmriprep --smoothing $SMOOTHING -p ${CONFOUND_REGRESSION} \
+-f 0 -w "/sing_scratch" --notrack --fs-license-file /imgdir/license.txt \
+/datain/fmriprep /datain/ participant
