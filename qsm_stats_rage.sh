@@ -7,7 +7,7 @@ sequence=$4
 roi_names=/scripts/aparc_cort_subcort_labels.txt
 cd /dataqsm
 
-echo "Creating masks for each ROI based on freesurfer parcellation and calculating ROI stats in QSM image"
+echo "Creating masks for each ROI base_dir on freesurfer parcellation and calculating ROI stats in QSM image"
 touch roi_csv_tmp.csv
 mkdir ./masks
 acqtag="_acq-mp2rageunidenoised_"

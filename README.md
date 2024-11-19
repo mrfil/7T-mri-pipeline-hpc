@@ -37,3 +37,12 @@ Python-based Quality Control report generator developed by Nishant Bhamidipati a
 git clone https://github.com/mrfil/html-qc-reports.git
 ```
 
+### To-Do
+
+ - [ ] Update usage for Apptainer
+ - [ ] Update docs for Apptainer
+ - [ ] Update slurm scripts for Apptainer, BIDS-App version changes
+ - [ ] Update collation scripts for XCP-D
+ - [ ] Update collation scripts for QSIRecon separate derivatives folders
+ - [ ] Update project_doc.sh for new versions, generate JSON instead
+ - [ ] Update slurm script for xcp to XCP-D

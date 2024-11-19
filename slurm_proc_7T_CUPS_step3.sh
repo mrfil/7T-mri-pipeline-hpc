@@ -9,21 +9,21 @@ while getopts :p:s:z:m:f:l:b:t: option; do
 	m) export MINQC=$OPTARG ;;
 	f) export fieldmaps=$OPTARG ;;
 	l) export longitudinal=$OPTARG ;;
-	b) export based=$OPTARG ;;
+	b) export base_dir=$OPTARG ;;
 	t) export version=$OPTARG ;;
 	esac
 done
 ## takes project, subject, and session as inputs
 
-pilotdir=${based}/original_location_of_images_from_XNAT
-IMAGEDIR=${based}/singularity_images
-tmpdir=${based}/${version}/testing
-scripts=${based}/${version}/scripts
-bids_out=${based}/${version}/bids_only
-conn_out=${based}/${version}/conn_out
-dataqc=${based}/${version}/data_qc
-stmpdir=${based}/${version}/scratch/stmp
-scachedir=${based}/${version}/scratch/scache
+pilotdir=${base_dir}/original_location_of_images_from_XNAT
+IMAGEDIR=${base_dir}/apptainer_images
+tmpdir=${base_dir}/${version}/testing
+scripts=${base_dir}/${version}/scripts
+bids_out=${base_dir}/${version}/bids_only
+conn_out=${base_dir}/${version}/conn_out
+dataqc=${base_dir}/${version}/data_qc
+stmpdir=${base_dir}/${version}/scratch/stmp
+scachedir=${base_dir}/${version}/scratch/scache
 
 cd $pilotdir
 
@@ -49,13 +49,13 @@ subject="sub-"${CLEANSUBJECT}
 sesname="ses-"${session}
 
 	projDir=${tmpdir}/${project}
-	scripts=${based}/${version}/scripts
+	scripts=${base_dir}/${version}/scripts
 
 	cd $projDir
 
-	IMAGEDIR=${based}/singularity_images
-	CACHESING=${scachedir}/${project}_${subject}_${sesname}_dcm2rsfc
-	TMPSING=${stmpdir}/${project}_${subject}_${sesname}_dcm2rsfc
+	IMAGEDIR=${base_dir}/apptainer_images
+	CACHESING=${scachedir}/${project}_${subject}_${sesname}_sc
+	TMPSING=${stmpdir}/${project}_${subject}_${sesname}_sc
 	mkdir $CACHESING
 	mkdir $TMPSING
 
@@ -65,41 +65,41 @@ sesname="ses-"${session}
 	if [ -d "${projDir}/bids/${subject}/${sesname}/dwi" ];
         then
 
-		IMAGEDIR=${based}/singularity_images
-		scripts=${based}/${version}/scripts
-		projDir=${based}/${version}/testing/${project}
-		scachedir=${based}/${version}/scratch/scache/${project}/${sesname}
-		stmpdir=${based}/${version}/scratch/stmp/${project}/${sesname}
+		IMAGEDIR=${base_dir}/apptainer_images
+		scripts=${base_dir}/${version}/scripts
+		projDir=${base_dir}/${version}/testing/${project}
+		scachedir=${base_dir}/${version}/scratch/scache/${project}/${sesname}
+		stmpdir=${base_dir}/${version}/scratch/stmp/${project}/${sesname}
 
-		mkdir ${based}/${version}/scratch/scache/${project}
-		mkdir ${based}/${version}/scratch/stmp/${project}
-		mkdir ${based}/${version}/scratch/scache/${project}/${sesname}
-		mkdir ${based}/${version}/scratch/stmp/${project}/${sesname}
-		chmod 777 -R ${stmpdir}
-		chmod 777 -R ${scachedir}
+		mkdir ${base_dir}/${version}/scratch/scache/${project}
+		mkdir ${base_dir}/${version}/scratch/stmp/${project}
+		mkdir ${base_dir}/${version}/scratch/scache/${project}/${sesname}
+		mkdir ${base_dir}/${version}/scratch/stmp/${project}/${sesname}
+		chmod 730 -R ${stmpdir}
+		chmod 730 -R ${scachedir}
 		NOW=$(date +"%m-%d-%Y-%T")
 		echo "QSIprep started $NOW" >> ${scripts}/fulltimer.txt
 
-		SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives  --freesurfer_input /data/bids/derivatives/sourcedata/freesurfer --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
+		APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives  --freesurfer_input /data/bids/derivatives/sourcedata/freesurfer --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
 
-		chmod 777 -R ${projDir}/bids/derivatives/qsiprep
-		${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} QSIprep ${based}
+		chmod 730 -R ${projDir}/bids/derivatives/qsiprep
+		${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} QSIprep ${base_dir}
 		NOW=$(date +"%m-%d-%Y-%T")
 		echo "QSIprep finished $NOW" >> ${scripts}/fulltimer.txt
 		NOW=$(date +"%m-%d-%Y-%T")
 		echo "QSIprep Recon started $NOW" >> ${scripts}/fulltimer.txt
-		SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec mrtrix_multishell_msmt_ACT-hsvs --freesurfer_input /data/bids/derivatives/sourcedata/freesurfer --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
-		SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec dsi_studio_gqi --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
-        SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec amico_noddi --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
+		APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec mrtrix_multishell_msmt_ACT-hsvs --freesurfer_input /data/bids/derivatives/sourcedata/freesurfer --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
+		APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec dsi_studio_gqi --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
+        APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.16.1.sif --fs-license-file /imgdir/license.txt /data/bids/sourcedata /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec amico_noddi --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
         NOW=$(date +"%m-%d-%Y-%T")
 		echo "QSIprep Recon finished $NOW" >> ${scripts}/fulltimer.txt
-		chmod 777 -R ${projDir}/bids/derivatives/qsirecon
+		chmod 730 -R ${projDir}/bids/derivatives/qsirecon
 
-		SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/qsirecon:/data ${IMAGEDIR}/matlab-R2019a.sif /work/qsinbs.sh "$subject" "$sesname"
+		APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/qsirecon:/data ${IMAGEDIR}/matlab-R2019a.sif /work/qsinbs.sh "$subject" "$sesname"
 
-		SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${scripts}:/scripts,${projDir}/bids/derivatives/qsirecon/${subject}/${sesname}/dwi:/datain -W /datain ${IMAGEDIR}/pylearn.sif /scripts/gqimetrics.py
+		APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${scripts}:/scripts,${projDir}/bids/derivatives/qsirecon/${subject}/${sesname}/dwi:/datain -W /datain ${IMAGEDIR}/pylearn.sif /scripts/gqimetrics.py
 		
-		SINGULARITY_CACHEDIR=${scachedir} SINGULARITY_TMPDIR=${stmpdir} singularity run --cleanenv --bind ${scripts}:/scripts,${projDir}/bids/derivatives/qsirecon/${subject}/${sesname}/dwi:/datanoddi ${IMAGEDIR}/neurodoc.sif /scripts/noddi_stats.sh "$subject" "$sesname"
+		APPTAINER_CACHEDIR=${scachedir} APPTAINER_TMPDIR=${stmpdir} apptainer run --containall --no-home --cleanenv --bind ${scripts}:/scripts,${projDir}/bids/derivatives/qsirecon/${subject}/${sesname}/dwi:/datanoddi ${IMAGEDIR}/neurodoc.sif /scripts/noddi_stats.sh "$subject" "$sesname"
 		
 		cd {projDir}/bids/derivatives/qsirecon/${subject}/${sesname}/dwi
 		paste -d, *ISOVF*csv > ${subject}_${sesname}_ISOVF.csv
@@ -107,6 +107,6 @@ sesname="ses-"${session}
 		paste -d, *OD*csv > ${subject}_${sesname}_OD.csv
 		paste -d ${subject}_${sesname}_ICVF.csv ${subject}_${sesname}_ISOVF.csv ${subject}_${sesname}_OD.csv > ${subject}_${sesname}_NODDI_STATS.csv
 		
-		${scripts}/pdf_printer.sh ${projID} ${subject} ${sesname} QSIprepRecon ${based}
+		${scripts}/pdf_printer.sh ${projID} ${subject} ${sesname} QSIprepRecon ${base_dir}
 	fi
 

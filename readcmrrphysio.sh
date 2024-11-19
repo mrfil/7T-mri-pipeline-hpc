@@ -5,7 +5,7 @@
 # bind directories for data and toolboxes on run, then specify their paths in this script
 # bind working directory for functions
 #
-# singularity run --bind /local/path/to/MB:/MB,/local/path/to/data:/datain matlabr2019a.sif readcmrrphysio.sh arg1
+# apptainer run --cleanenv --no-home --contain --bind /local/path/to/MB:/MB,/local/path/to/data:/datain matlabr2019a.sif readcmrrphysio.sh arg1
 
 
 #cd /work

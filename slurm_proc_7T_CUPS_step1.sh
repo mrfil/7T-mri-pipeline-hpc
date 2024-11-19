@@ -9,21 +9,21 @@ while getopts :p:s:z:m:f:l:b:t: option; do
 	m) export MINQC=$OPTARG ;;
 	f) export fieldmaps=$OPTARG ;;
 	l) export longitudinal=$OPTARG ;;
-	b) export based=$OPTARG ;;
+	b) export base_dir=$OPTARG ;;
 	t) export version=$OPTARG ;;
 	esac
 done
 ## takes project, subject, and session as inputs
 
-pilotdir=${based}/original_location_of_images_from_XNAT
-IMAGEDIR=${based}/singularity_images
-tmpdir=${based}/${version}/testing
-scripts=${based}/${version}/scripts
-bids_out=${based}/${version}/bids_only
-conn_out=${based}/${version}/conn_out
-dataqc=${based}/${version}/data_qc
-stmpdir=${based}/${version}/scratch/stmp
-scachedir=${based}/${version}/scratch/scache
+pilotdir=${base_dir}/original_location_of_images_from_XNAT
+IMAGEDIR=${base_dir}/apptainer_images
+tmpdir=${base_dir}/${version}/testing
+scripts=${base_dir}/${version}/scripts
+bids_out=${base_dir}/${version}/bids_only
+conn_out=${base_dir}/${version}/conn_out
+dataqc=${base_dir}/${version}/data_qc
+stmpdir=${base_dir}/${version}/scratch/stmp
+scachedir=${base_dir}/${version}/scratch/scache
 
 cd $pilotdir
 
@@ -60,18 +60,18 @@ if [ "${MINQC}" == "yes" ];
 then
 
 	projDir=${tmpdir}/${project}
-	scripts=${based}/${version}/scripts
+	scripts=${base_dir}/${version}/scripts
 
 	cd $projDir
 
-	IMAGEDIR=${based}/singularity_images
+	IMAGEDIR=${base_dir}/apptainer_images
 	CACHESING=${scachedir}/${project}_${subject}_${sesname}_minqc
 	TMPSING=${stmpdir}/${project}_${subject}_${sesname}_minqc
 
 	mkdir $CACHESING
 	mkdir $TMPSING
-	chmod 777 -R $CACHESING
-	chmod 777 -R $TMPSING
+	chmod 730 -R $CACHESING
+	chmod 730 -R $TMPSING
 
 	NOW=$(date +"%m-%d-%Y-%T")
 	#heudiconv
@@ -80,11 +80,11 @@ then
 
 	ses=${sesname:4}
 	sub=${subject:4}
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/datain $IMAGEDIR/heudiconv0.6.simg heudiconv -d /datain/{subject}/{session}/*/scans/*/DICOM/*dcm -f /datain/${project}_heuristic.py -o /datain/bids -s ${sub} -ss ${ses} -c dcm2niix -b
-	chmod 777 -R ${projDir}/bids
+	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --cleanenv --no-home --contain --bind ${projDir}:/datain $IMAGEDIR/heudiconv-1.3.0.sif heudiconv -d /datain/{subject}/{session}/*/scans/*/DICOM/*dcm -f /datain/${project}_heuristic.py -o /datain/bids -s ${sub} -ss ${ses} -c dcm2niix -b
+	chmod 730 -R ${projDir}/bids
 	rm -rf __pycache__
 
-	mkdir ${based}/dataqc/${project}
+	mkdir ${base_dir}/dataqc/${project}
 
 	mkdir ${projDir}/bids/derivatives
 
@@ -100,26 +100,26 @@ then
 	NOW=$(date +"%m-%d-%Y-%T")
 	echo "$NOW" >> ${scripts}/timer.txt
 
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity run --cleanenv --bind ${projDir}/bids:/data --bind ${projDir}/bids/derivatives/mriqc:/out $IMAGEDIR/mriqc-0.16.0.sif /data /out participant --participant-label ${sub} --session-id ${ses} --fft-spikes-detector --despike --no-sub
+	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv --bind ${projDir}/bids:/data --bind ${projDir}/bids/derivatives/mriqc:/out $IMAGEDIR/mriqc-v24.0.2.sif /data /out participant --participant-label ${sub} --session-id ${ses} --fft-spikes-detector --despike --no-sub
 	chmod 2777 -R ${projDir}/bids/derivatives/mriqc
 
 	NOW=$(date +"%m-%d-%Y-%T")
 	echo "$NOW" >> ${scripts}/timer.txt
 
-	${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} mriqc ${based}
+	${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} mriqc ${base_dir}
 
 	rm -rf $CACHESING
 	rm -rf $TMPSING
-	mv ${projDir}/bids/derivatives/mriqc ${based}/dataqc/${project}/mriqc
-	chmod 777 -R ${based}/dataqc/${project}
+	mv ${projDir}/bids/derivatives/mriqc ${base_dir}/dataqc/${project}/mriqc
+	chmod 730 -R ${base_dir}/dataqc/${project}
 
 else
 	projDir=${tmpdir}/${project}
-	scripts=${based}/${version}/scripts
+	scripts=${base_dir}/${version}/scripts
 
 	cd $projDir
 
-	IMAGEDIR=${based}/singularity_images
+	IMAGEDIR=${base_dir}/apptainer_images
 	CACHESING=${scachedir}/${project}_${subject}_${sesname}_dcm2rsfc
 	TMPSING=${stmpdir}/${project}_${subject}_${sesname}_dcm2rsfc
 	mkdir $CACHESING
@@ -133,7 +133,7 @@ else
 	${scripts}/project_doc.sh ${project} ${subject} ${sesname} "heudiconv" "yes"
 	ses=${sesname:4}
 	sub=${subject:4}
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-v0.11.3.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids/sourcedata --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite 
+	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-v1.3.0.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids/sourcedata --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite 
 	chmod 2777 -R ${projDir}/bids
 
 	NOW=$(date +"%m-%d-%Y-%T")
@@ -141,7 +141,7 @@ else
 
 	if [ "${fieldmaps}" == "yes" ];
 	then
-	    SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/jsoncrawler_jq.sh /data/bids/sourcedata ${sesname} ${subject}
+	    APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --cleanenv --no-home --contain --bind ${projDir}:/data,${scripts}:/scripts ${IMAGEDIR}/ubuntu-jqjo.sif /scripts/jsoncrawler_jq.sh /data/bids/sourcedata ${sesname} ${subject}
 	fi
 	
 	cd ${projDir}/bids/sourcedata/${subject}/${sesname}/anat/
@@ -149,21 +149,21 @@ else
 	rm ${projDir}/bids/derivatives/${subject}/${sesname}/tmp
 	rm ${projDir}/bids/derivatives/${subject}/${sesname}/test.txt	
 
-	mkdir ${based}/${version}/output/${project}
+	mkdir ${base_dir}/${version}/output/${project}
 
 	mkdir ${projDir}/bids/derivatives
 
 	cd ${projDir}
 
 	echo "Denoising MP2RAGE with LAYNII"
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --cleanenv --bind ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat:/datain $IMAGEDIR/laynii-2.0.0.sif /opt/laynii2/laynii/LN_MP2RAGE_DNOISE -INV1 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-1_T1w.nii.gz -INV2 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-2_T1w.nii.gz -UNI /datain/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w.nii.gz -beta 0.2
+	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv --bind ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat:/datain $IMAGEDIR/laynii-v2.1.1.sif /opt/laynii2/laynii/LN_MP2RAGE_DNOISE -INV1 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-1_T1w.nii.gz -INV2 /datain/sub-${sub}_ses-${ses}_acq-mp2rageinv_run-2_T1w.nii.gz -UNI /datain/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w.nii.gz -beta 0.4
 	mv ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat/*inv* ${projDir}/bids/derivatives/
 	mv ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat/*uni_run-*_T1w.nii.gz ${projDir}/bids/derivatives/
 	mv ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat/*uni_run-*_T1w.json ${projDir}/bids/derivatives/
 	mv ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w*border*.nii.gz ${projDir}/bids/derivatives/
     mv ${projDir}/bids/sourcedata/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageuni_run-3_T1w_denoised.nii.gz ${projDir}/bids/sub-${sub}/ses-${ses}/anat/sub-${sub}_ses-${ses}_acq-mp2rageunidenoised_T1w.nii.gz 
 	mkdir ${projDir}/bids/derivatives/mriqc
-	chmod 777 -R ${projDir}/bids/derivatives/mriqc
+	chmod 730 -R ${projDir}/bids/derivatives/mriqc
 
 	mkdir -p ${projDir}/bids/derivatives/swi/${subject}/${sesname}/ndi_out
 	mkdir -p ${projDir}/bids/derivatives/swi_old/${subject}/${sesname}/ndi_out
@@ -172,7 +172,7 @@ else
     cp ${projDir}/${sub}/${ses}/scans/swi_old/*dcm ${projDir}/bids/derivatives/swi_old/${subject}/${sesname}/
 	echo "Generating QSM with hybrid Cornell-Berkeley tools"
 	echo "Fractional intensity threshold set to 0.3 (see scripts/matlab/ndi_qsm_fp3.sh)"
-    SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2019a.sif /scripts/ndi_qsm_fp3.sh
+    APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --cleanenv --no-home --contain --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2021a.sif /scripts/ndi_qsm_fp3.sh
 	echo "Pseudo-BIDSifying QSM outputs"
 	cd ${projDir}/bids/derivatives/swi/${subject}/${sesname}
 	mv ./ndi_out/mag.nii ./ndi_out/${subject}_${sesname}_ndi_mag_fp3.nii
@@ -180,7 +180,7 @@ else
 	mv ./ndi_out/qsm.nii ./ndi_out/${subject}_${sesname}_ndi_qsm_fp3.nii
 
     echo "Fractional intensity threshold set to 0.2 (see scripts/matlab/ndi_qsm_fp2.sh)"
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2019a.sif /scripts/ndi_qsm_fp2.sh
+	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --cleanenv --no-home --contain --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2021a.sif /scripts/ndi_qsm_fp2.sh
     echo "Pseudo-BIDSifying QSM outputs"
     cd ${projDir}/bids/derivatives/swi/${subject}/${sesname}
     mv ./ndi_out/mag.nii ./ndi_out/${subject}_${sesname}_ndi_mag_fp2.nii
@@ -188,7 +188,7 @@ else
     mv ./ndi_out/qsm.nii ./ndi_out/${subject}_${sesname}_ndi_qsm_fp2.nii
 
     echo "Fractional intensity threshold set to 0.4 (see scripts/matlab/ndi_qsm_fp4.sh)"
-	SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2019a.sif /scripts/ndi_qsm_fp4.sh
+	APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --cleanenv --no-home --contain --bind ${projDir}/bids/derivatives/swi/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2021a.sif /scripts/ndi_qsm_fp4.sh
     echo "Pseudo-BIDSifying QSM outputs"
     cd ${projDir}/bids/derivatives/swi/${subject}/${sesname}
     mv ./ndi_out/mag.nii ./ndi_out/${subject}_${sesname}_ndi_mag_fp4.nii
@@ -196,7 +196,7 @@ else
     mv ./ndi_out/qsm.nii ./ndi_out/${subject}_${sesname}_ndi_qsm_fp4.nii
 
 	echo "Fractional intensity threshold set to 0.2 (see scripts/matlab/ndi_qsm_fp2.sh)"
-    SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity exec --bind ${projDir}/bids/derivatives/swi_old/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2019a.sif /scripts/ndi_qsm_fp2.sh
+    APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --cleanenv --no-home --contain --bind ${projDir}/bids/derivatives/swi_old/${subject}/${sesname}:/datain,${IMAGEDIR}/ndi:/ndi,${scripts}/matlab:/scripts ${IMAGEDIR}/matlab-r2021a.sif /scripts/ndi_qsm_fp2.sh
     echo "Pseudo-BIDSifying QSM outputs"
     cd ${projDir}/bids/derivatives/swi_old/${subject}/${sesname}
     mv ./ndi_out/mag.nii ./ndi_out/${subject}_${sesname}_ndi_mag_fp2.nii
@@ -206,14 +206,14 @@ else
 	
 	echo "Running mriqc"
 	TEMPLATEFLOW_HOST_HOME=$IMAGEDIR/templateflow
-    export SINGULARITYENV_TEMPLATEFLOW_HOME="/templateflow"
-    SINGULARITY_CACHEDIR=$CACHESING SINGULARITY_TMPDIR=$TMPSING singularity run --bind ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITYENV_TEMPLATEFLOW_HOME},${projDir}/bids/sourcedata:/data,${projDir}/bids/derivatives/mriqc:/out $IMAGEDIR/mriqc-v22.0.6.sif /data /out participant --participant-label ${sub} --session-id ${ses} -v --no-sub
+    export APPTAINERENV_TEMPLATEFLOW_HOME="/templateflow"
+    APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},${projDir}/bids/sourcedata:/data,${projDir}/bids/derivatives/mriqc:/out $IMAGEDIR/mriqc-v24.0.2.sif /data /out participant --participant-label ${sub} --session-id ${ses} -v --no-sub
 	chmod 2777 -R ${projDir}/bids/derivatives/mriqc
 
 	NOW=$(date +"%m-%d-%Y-%T")
 	echo "MRIQC finished $NOW" >> ${scripts}/fulltimer.txt
 
-	${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} mriqc ${based}
+	${scripts}/pdf_printer.sh ${project} ${subject} ${sesname} mriqc ${base_dir}
 
 	mkdir ${dataqc}/${project}
 	cp -R ${projDir}/bids/derivatives/mriqc ${dataqc}/${project}/

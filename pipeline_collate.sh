@@ -11,12 +11,12 @@ while getopts :p:s:z:b:t: option; do
     	p) export project=$OPTARG ;;
     	s) export session=$OPTARG ;;
     	z) export subject=$OPTARG ;;
-        b) export based=$OPTARG ;;
+        b) export base_dir=$OPTARG ;;
 	t) export version=$OPTARG ;;
 	esac
 done
 
-projDir=${based}/${version}/testing/${project}
+projDir=${base_dir}/${version}/testing/${project}
 mriqcDir=${projDir}/bids/derivatives/mriqc/${subject}/${session}
 fmriprepDir=${projDir}/bids/derivatives/fmriprep/${subject}/${session}
 xcpDir=${projDir}/bids/derivatives/xcp/${session}
@@ -26,20 +26,20 @@ aspireDir=${projDir}/bids/derivatives/swi/${subject}/${session}/ndi_out
 swiDir=${projDir}/bids/derivatives/swi/${subject}/${session}/ndi_out
 ashsDir=${projDir}/bids/derivatives/ashs/${subject}/${session}/final
 qatoolsDir=${projDir}/bids/derivatives/qatools/${subject}
-scriptsDir=${based}/${version}/scripts
+scriptsDir=${base_dir}/${version}/scripts
 
 
-outputDir=${based}/${version}/output/${project}/${subject}/${session}
+outputDir=${base_dir}/${version}/output/${project}/${subject}/${session}
 NOW=`date +%d-%b-%Y`
 
 if [ -d "$outputDir" ];
 then
     echo $outputDir
 else
-    mkdir ${based}/${version}/output/${project}
-    mkdir ${based}/${version}/output/${project}/${subject}   
+    mkdir ${base_dir}/${version}/output/${project}
+    mkdir ${base_dir}/${version}/output/${project}/${subject}   
     mkdir $outputDir
-    chmod 777 -R ${based}/${version}/output/${project}
+    chmod 730 -R ${base_dir}/${version}/output/${project}
 fi
 
 #get all output files with metrics 
@@ -48,26 +48,26 @@ echo "Gathering Outputs"
 
 cd $outputDir
 
-SINGCACHE=${based}/${version}/scratch/scache/${project}_${subject}_${session}
+SINGCACHE=${base_dir}/${version}/scratch/scache/${project}_${subject}_${session}
 mkdir $SINGCACHE
-SINGTMP=${based}/${version}/scratch/stmp/${project}_${subject}_${session}
+SINGTMP=${base_dir}/${version}/scratch/stmp/${project}_${subject}_${session}
 mkdir $SINGTMP
 
-IMAGEDIR=${based}/singularity_images
+IMAGEDIR=${base_dir}/apptainer_images
 
 #mriqc
 cp ${mriqcDir}/anat/*T1w.json ${outputDir}/mriqc_T1w.json
 cp ${mriqcDir}/anat/*run-1*T2w.json ${outputDir}/mriqc_T2w.json
 cp ${mriqcDir}/func/*rest*json ${outputDir}/mriqc_rest_bold.json
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}:/scripts ${IMAGEDIR}/ubuntu-jq-0.1.sif /scripts/mriqciqms.sh 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/mriqc_iqms_func_rest.csv /data/${subject}_mriqc_iqms_func_rest.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}:/scripts ${IMAGEDIR}/ubuntu-jq-0.1.sif /scripts/mriqciqms.sh 
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/mriqc_iqms_func_rest.csv /data/${subject}_mriqc_iqms_func_rest.csv
 mv ${outputDir}/${subject}_mriqc_iqms_func_rest.csv ${outputDir}/mriqc_iqms_func_rest.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/mriqc_iqms_t1w.csv /data/${subject}_mriqc_iqms_t1w.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/mriqc_iqms_t1w.csv /data/${subject}_mriqc_iqms_t1w.csv
 mv ${outputDir}/${subject}_mriqc_iqms_t1w.csv ${outputDir}/mriqc_iqms_t1w.csv
 if [[ -f "${mriqcDir}/anat/*run-1*T2w.json" ]];
 then
-	SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/mriqc_iqms_t2w.csv /data/${subject}_mriqc_iqms_t2w.csv
+	APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/mriqc_iqms_t2w.csv /data/${subject}_mriqc_iqms_t2w.csv
 	mv ${outputDir}/${subject}_mriqc_iqms_t2w.csv ${outputDir}/mriqc_iqms_t2w.csv
 fi
 
@@ -78,17 +78,17 @@ cp ${xcpDir}/xcp_minimal_func/${subject}/*_quality_despike.csv ${outputDir}/xcp_
 cp ${xcpDir}/xcp_minimal_func/${subject}/*_quality_scrub.csv ${outputDir}/xcp_scrub_quality_orig.csv
 cp ${xcpDir}/xcp_minimal_aroma/${subject}/*quality_aroma.csv ${outputDir}/xcp_aroma_quality_orig.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_func_quality_orig.csv /data/xcp_func_quality.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_despike_quality_orig.csv /data/xcp_despike_quality.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_scrub_quality_orig.csv /data/xcp_scrub_quality.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_aroma_quality_orig.csv /data/xcp_aroma_quality.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_func_quality_orig.csv /data/xcp_func_quality.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_despike_quality_orig.csv /data/xcp_despike_quality.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_scrub_quality_orig.csv /data/xcp_scrub_quality.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/xcp_aroma_quality_orig.csv /data/xcp_aroma_quality.csv
 
 #nbs files
 mkdir ${outputDir}/fc36p
 mkdir ${outputDir}/despike
 mkdir ${outputDir}/scrub
 mkdir ${outputDir}/aroma
-chmod 777 -R ${outputDir}
+chmod 730 -R ${outputDir}
 
 if [[ `cat ${xcpDir}/xcp_minimal_func/${subject}/${subject}_logs/${subject}_audit.csv | grep "1,1,1,1,1,1,1,1,1,1"` ]];
 then
@@ -103,9 +103,9 @@ cp ${xcpDir}/xcp_minimal_func/${subject}/fcon/nbs/fc36p/${subject}_desikanKillia
 cp ${xcpDir}/xcp_minimal_func/${subject}/fcon/nbs/fc36p/${subject}_power264nbs_table.txt ${outputDir}/${subject}_power264nbs_table_fc36p.csv
 cp ${xcpDir}/xcp_minimal_func/${subject}/fcon/nbs/fc36p/${subject}_aal116nbs_table.txt ${outputDir}/${subject}_aal116nbs_table_fc36p.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_fc36p.csv /data/${subject}_${session}_desikanKillianynbs_table_fc36p.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_fc36p.csv /data/${subject}_${session}_power264nbs_table_fc36p.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_fc36p.csv /data/${subject}_${session}_aal116nbs_table_fc36p.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_fc36p.csv /data/${subject}_${session}_desikanKillianynbs_table_fc36p.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_fc36p.csv /data/${subject}_${session}_power264nbs_table_fc36p.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_fc36p.csv /data/${subject}_${session}_aal116nbs_table_fc36p.csv
 
 if [[ `cat ${xcpDir}/xcp_despike/${subject}/${subject}_logs/${subject}_audit.csv | grep "1,1,1,1,1,1,1,1,1,1"` ]];
 then
@@ -123,9 +123,9 @@ mv ${outputDir}/despike/${subject}_desikanKillianynbs_table.txt ${outputDir}/${s
 mv ${outputDir}/despike/${subject}_power264nbs_table.txt ${outputDir}/${subject}_power264nbs_table_despike.csv
 mv ${outputDir}/despike/${subject}_aal116nbs_table.txt ${outputDir}/${subject}_aal116nbs_table_despike.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_despike.csv /data/${subject}_${session}_desikanKillianynbs_table_despike.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_despike.csv /data/${subject}_${session}_power264nbs_table_despike.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_despike.csv /data/${subject}_${session}_aal116nbs_table_despike.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_despike.csv /data/${subject}_${session}_desikanKillianynbs_table_despike.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_despike.csv /data/${subject}_${session}_power264nbs_table_despike.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_despike.csv /data/${subject}_${session}_aal116nbs_table_despike.csv
 
 if [[ `cat ${xcpDir}/*scrub/${subject}/${subject}_logs/*process | grep "total number of fixed regressors"` ]]; 
 then 
@@ -151,9 +151,9 @@ mv ${outputDir}/scrub/${subject}_desikanKillianynbs_table.txt ${outputDir}/${sub
 mv ${outputDir}/scrub/${subject}_power264nbs_table.txt ${outputDir}/${subject}_power264nbs_table_scrub.csv
 mv ${outputDir}/scrub/${subject}_aal116nbs_table.txt ${outputDir}/${subject}_aal116nbs_table_scrub.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_scrub.csv /data/${subject}_${session}_desikanKillianynbs_table_scrub.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_scrub.csv /data/${subject}_${session}_power264nbs_table_scrub.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_scrub.csv /data/${subject}_${session}_aal116nbs_table_scrub.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_scrub.csv /data/${subject}_${session}_desikanKillianynbs_table_scrub.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_scrub.csv /data/${subject}_${session}_power264nbs_table_scrub.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_scrub.csv /data/${subject}_${session}_aal116nbs_table_scrub.csv
 
 if [[ `cat ${xcpDir}/xcp_minimal_aroma/${subject}/${subject}_logs/${subject}_audit.csv | grep "1,1,1,1,1,1,1,1,1,1"` ]];
 then
@@ -171,9 +171,9 @@ mv ${outputDir}/aroma/${subject}_desikanKillianynbs_table.txt ${outputDir}/${sub
 mv ${outputDir}/aroma/${subject}_power264nbs_table.txt ${outputDir}/${subject}_power264nbs_table_aroma.csv
 mv ${outputDir}/aroma/${subject}_aal116nbs_table.txt ${outputDir}/${subject}_aal116nbs_table_aroma.csv
 
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_aroma.csv /data/${subject}_${session}_desikanKillianynbs_table_aroma.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_aroma.csv /data/${subject}_${session}_power264nbs_table_aroma.csv
-SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_aroma.csv /data/${subject}_${session}_aal116nbs_table_aroma.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_desikanKillianynbs_table_aroma.csv /data/${subject}_${session}_desikanKillianynbs_table_aroma.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_power264nbs_table_aroma.csv /data/${subject}_${session}_power264nbs_table_aroma.csv
+APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/${subject}_aal116nbs_table_aroma.csv /data/${subject}_${session}_aal116nbs_table_aroma.csv
 
 #if [ -d "${strucconDir}" ];
 #then
@@ -181,7 +181,7 @@ SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cl
 #	cp ${strucconDir}/scfsl_nbs_${subject}.txt ${outputDir}/scfsl_nbs_${subject}.csv
 #	cp ${strucconDir}/${subject}_scfsl_nbs_rois.txt ${outputDir}/${subject}_scfsl_nbs_rois.csv
 #
-#	SINGULARITY_CACHEDIR=$SINGCACHE SINGULARITY_TMPDIR=$SINGTMP singularity run --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/scfsl_nbs_${subject}.csv /data/scfsl_nbs_${subject}_${session}.csv
+#	APPTAINER_CACHEDIR=$SINGCACHE APPTAINER_TMPDIR=$SINGTMP apptainer run --contain --no-home --cleanenv -B ${outputDir}:/data,${scriptsDir}/pyscripts:/work ${IMAGEDIR}/python3.sif /work/dsn_tag.py /data/scfsl_nbs_${subject}.csv /data/scfsl_nbs_${subject}_${session}.csv
 #else
 #	echo "no scfsl detected"
 #fi
@@ -353,5 +353,5 @@ rm -R $SINGTMP
 
 echo "Finished collating"
 echo "See ${outputDir} for results csv"
-echo "See ${based}/${version}/data_qc for visual quality control reports"
+echo "See ${base_dir}/${version}/data_qc for visual quality control reports"
 
