@@ -4,9 +4,9 @@
 Main Pipeline
 -------------
 
-To facilitate reproducible analyses at 7T, we developed a Singularity container-based processing pipeline for MRI modalities commonly collected at our site (BIC + CI-AIC).
+To facilitate reproducible analyses at 7T, we developed a Apptainer container-based processing pipeline for MRI modalities commonly collected at our site (BIC + CI-AIC).
 These are compatible with the Brain Imaging Data Structure (BIDS) specification and are designed for deployment to high-performance computing clusters.
-This pipeline uses internally and externally developed BIDS-Apps converted from Docker images to Singularity images or built directly as Singularity images (see :ref:`the installation guide<Install>`). 
+This pipeline uses internally and externally developed BIDS-Apps converted from Docker images to Apptainer images or built directly as Apptainer images (see :ref:`the installation guide<Install>`). 
 The pipeline consists of an initial conversion and quality control metric generation step, followed by four steps run in parallel with the Slurm Workload Manager (SchedMD LLC, Lehi, Utah, USA).
 *Note that these scripts can also be run on Linux systems not managed by Slurm.*
 
@@ -107,8 +107,7 @@ aal116_count_end_global_efficiency_weighted
 RSFC
 
 No underscores, starts with network-based measure, then atlas, ends with confound regression method = resting-state functional connectivity network-based measures	
-https://xcpengine.readthedocs.io/overview.html#step-2-choose-configure-a-pipeline-design - 	info on confound regression methods used (36P, 36P + despike, 36P + Power Scrub [this fails for a number of participants due to high motion], ICA-AROMA)
-https://xcpengine.readthedocs.io/config/streams/fc.html
+https://xcp-d.readthedocs.io/en/latest/usage.html
 
 https://sites.google.com/site/bctnet/ - Matlab/python toolbox for nbs calculation
 
@@ -145,7 +144,7 @@ You must specify which image modalities (e.g. T1w, T2w, FLAIR, etc.) to deface w
 
 .. code-block:: bash
 
-    ./singularity_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
+    ./apptainer_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
 
 
 FSL DTI probabilistic tractography from QSIPrep Preprocessing (Optional)
@@ -223,7 +222,7 @@ Usage:
 .. code-block:: bash
 
     #run reconstruction workflow in QSIPrep
-    docker run -v ${IMAGEDIR}:/imgdir -v ${stmpdir}:/paulscratch -v ${projDir}:/data ${IMAGEDIR}/qsiprep-v0.15.1.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec reorient_fslstd --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
+    docker run -v ${IMAGEDIR}:/imgdir -v ${stmpdir}:/paulscratch -v ${projDir}:/data pennbbl/qsirecon:0.23.2 --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec reorient_fslstd --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
 
 
 .. code-block:: bash
@@ -232,17 +231,17 @@ Usage:
     -v /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt \
     -v /path/project/bids:/data mrfilbi/scfsl_gpu:0.3.2 /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
 
-*Singularity*
+*Apptainer*
 
 .. code-block:: bash
 
     #run reconstruction workflow in QSIPrep
-    singularity run --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.15.1.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec reorient_fslstd --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
+    apptainer run --cleanenv --bind ${IMAGEDIR}:/imgdir,${stmpdir}:/paulscratch,${projDir}:/data ${IMAGEDIR}/qsiprep-v0.24.0.sif --fs-license-file /imgdir/license.txt /data/bids /data/bids/derivatives --recon_input /data/bids/derivatives/qsiprep --recon_spec reorient_fslstd --output-resolution 1.6 -w /paulscratch participant --participant-label ${subject}
 
 .. code-block:: bash
     # Running SCFSL GPU tractography
-    SINGULARITY_ENVLD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
-    singularity exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
+    APPTAINER_ENVLD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
+    apptainer exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
     /path/to/scfsl_gpu-v0.3.2.sif /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
     
     
@@ -251,11 +250,11 @@ Usage:
 
 After running enough participant datasets through the pipeline, you can visualize quality control and network-based metrics using the  HTML QC Reports python tool developed by Nishant Bhamidipati and Paul Camacho https://github.com/mrfil/html-qc-reports
 
-Use the pylearn.sif Singularity image to run QC_Reporter.py 
+Use the pylearn.sif Apptainer image to run QC_Reporter.py 
 
 .. code-block:: bash
     
-    cd ./singularity_images
+    cd ./apptainer_images
     git clone https://github.com/mrfil/html-qc-reports.git
     cd html-qc-reports
-    singularity exec -B /path/to/output/collect:/datain,./:/scripts pylearn.sif python3 /scripts/QC_Reporter.py
+    apptainer exec -B /path/to/output/collect:/datain,./:/scripts pylearn.sif python3 /scripts/QC_Reporter.py

@@ -97,9 +97,9 @@ Running HeuDiConv with your adjusted heuristic.py will depend on your use case a
 
 .. :hlist::
     * HeuDiConv runs as part of the `main pipeline shell script <https://github.com/mrfil/7T-pipeline-hpc/blob/main/main_heuristic.py>`_. However, this can be less efficient for testing a heuristic.py.
-    * Using the Singularity image that runs in the pipeline:
+    * Using the Apptainer image that runs in the pipeline:
     .. code-block:: bash
-        singularity exec --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-0.9.0.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite
+        apptainer exec --cleanenv --bind ${projDir}:/datain ${IMAGEDIR}/heudiconv-0.9.0.sif heudiconv -d /datain/{subject}/{session}/scans/*/DICOM/*dcm -f /datain/${project}_heuristic_HCP.py -o /datain/bids --minmeta -s ${sub} -ss ${ses} -c dcm2niix -b --overwrite
 
 After conversion to BIDS using HeuDiConv, you will need to make sure that any fieldmap images used for susceptibility distortion correction (for fMRI and DWI)
 have IntendedFor items in their BIDS sidecar JSON files. Our pipeline automates this using jq and bash, but it always good to check these JSONs in the bids/sourcedata/sub-<participantID>/ses-<sessionID>/fmap directory.

@@ -9,8 +9,8 @@ The main pipeline takes MRI data in DICOM format and utilizes BIDS-Apps to outpu
 derivatives, processed derivatives, connectivity analyses, and other quantified microstructure measures and images. 
 
 
-Setup for this pipeline is not currently automated due to the nature of building Singularity images varying for different systems and users of those systems.
-We assume here that you have followed the `installation guide<Install>` to make your Singularity images and transferred them to the cluster you are using.
+Setup for this pipeline is not currently automated due to the nature of building Apptainer images varying for different systems and users of those systems.
+We assume here that you have followed the `installation guide<Install>` to make your Apptainer images and transferred them to the cluster you are using.
 
 
 Once you have your DICOMs in a consistent directory structure (i.e. project/participant/session/series/DICOM/*dcm),
@@ -86,13 +86,13 @@ Step 3 - diffusion MRI stream
     -v /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt \
     -v /path/project/bids:/data mrfilbi/scfsl_gpu:0.3.2 /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
 
-*Singularity*
+*Apptainer*
 
 .. code-block:: bash
 
     # Running SCFSL GPU tractography
     SINGULARITY_ENVLD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-10.2/lib64 \
-    singularity exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
+    apptainer exec --nv -B /path/to/freesurfer/license.txt:/opt/freesurfer/license.txt,/path/project/bids:/data \
     /path/to/scfsl_gpu-v0.3.2.sif /bin/bash /scripts/proc_fsl_connectome_fsonly.sh ${subject} ${session}
 
 
@@ -125,13 +125,13 @@ To run the main pipeline and log processing times, run with Slurm *sbatch* as fo
 
 After running enough participant datasets through the pipeline, you can visualize quality control and network-based metrics using the  HTML QC Reports python tool developed by Nishant Bhamidipati and Paul Camacho https://github.com/mrfil/html-qc-reports
 
-Use the pylearn.sif Singularity image to run QC_Reporter.py 
+Use the pylearn.sif Apptainer image to run QC_Reporter.py 
 
 .. code-block:: bash
     
-    cd ./singularity_images
+    cd ./apptainer_images
     git clone https://github.com/mrfil/html-qc-reports.git
     cd html-qc-reports
-    singularity exec -B /path/to/output/collect:/datain,./:/scripts pylearn.sif python3 /scripts/QC_Reporter.py
+    apptainer exec -B /path/to/output/collect:/datain,./:/scripts pylearn.sif python3 /scripts/QC_Reporter.py
 
     

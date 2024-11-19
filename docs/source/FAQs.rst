@@ -49,14 +49,14 @@ From a Docker repository:
     
     docker pull organization/image:tag
 
-How to build with Singularity
+How to build with Apptainer
 -----------------------------
 
-From a `def recipe file <https://singularity-userdoc.readthedocs.io/en/latest/container_recipes.html>`_ (requires sudo on most systems, some can bypass with --fakeroot):
+From a `def recipe file <https://apptainer-userdoc.readthedocs.io/en/latest/container_recipes.html>`_ (requires sudo on most systems, some can bypass with --fakeroot):
 
 .. code-block:: bash
 
-    sudo singularity build image.sif image.def
+    sudo apptainer build image.sif image.def
 
 Example def file:
 
@@ -84,5 +84,5 @@ From a Docker repository:
 
 .. code-block:: bash
     
-    singularity build imagename.sif docker://organization/image:tag
+    apptainer build imagename.sif docker://organization/image:tag
 
