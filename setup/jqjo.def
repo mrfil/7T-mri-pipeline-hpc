@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: ubuntu:18.04
+From: ubuntu:22.04
 
 %post
     # Update Ubuntu Software repository
