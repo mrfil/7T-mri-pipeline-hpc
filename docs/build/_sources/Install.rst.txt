@@ -8,10 +8,9 @@ To get started with the pipeline, please install the following requirements:
 
     * Apptainer BIDS apps (HeuDiConv, MRIQC, fMRIPrep, XCP-D, QSIprep, QSIRecon) 
     * Apptainer image of Matlab R2019a (how to: https://github.com/mathworks-ref-arch/matlab-dockerfile) 
-    * Apptainer image of Ubuntu with JQ installed Apptainer image of Python3 (Based on Docker python/3.9.0) 
+    * Apptainer image of Ubuntu with JQ installed Apptainer image of Python3 (Based on Docker python/3.10.0) 
     * Apptainer image of Docker HTML to PDF (https://github.com/pinkeen/docker-html-to-pdf) 
     * Brain Connectivity Toolbox for Matlab (https://sites.google.com/site/bctnet/Home/functions/BCT.zip?attredirects=0) 
-    * xcpEngine dsn files (https://github.com/PennBBL/xcpEngine/tree/master/designs) 
     * ASHS (https://sites.google.com/site/hipposubfields/) 
     * LAYNII (https://github.com/layerfMRI/LAYNII) 
     * bidsphysio (https://github.com/cbinyu/bidsphysio)
