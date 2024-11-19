@@ -50,21 +50,21 @@ fMRIPrep - Anatomical & Functional Preprocessing
 
 .. code-block:: bash
 
-    docker exec -v ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} -v $IMAGEDIR/license.txt:/opt/freesurfer/license.txt -v $TMPSING:/paulscratch -v ${projDir}:/datain nipreps/fmriprep:24.1.1 fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+    docker exec -v ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} -v $IMAGEDIR/license.txt:/opt/freesurfer/license.txt -v $TMPSING:/paulscratch -v ${projDir}:/datain nipreps/fmriprep:23.2.2 fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
 
 .. code-block:: bash
 
-    apptainer exec --contain --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v24.1.1.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+    apptainer exec --contain --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v23.2.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
 
 *If you do not have fMRI data, use the --anat-only argument*
 
 .. code-block:: bash
 
-    docker exec -v ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} -v $IMAGEDIR/license.txt:/opt/freesurfer/license.txt -v $TMPSING:/paulscratch -v ${projDir}:/datain nipreps/fmriprep:24.1.1 fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} --anat-only -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+    docker exec -v ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} -v $IMAGEDIR/license.txt:/opt/freesurfer/license.txt -v $TMPSING:/paulscratch -v ${projDir}:/datain nipreps/fmriprep:23.2.2 fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} --anat-only -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
 
 .. code-block:: bash
 
-    apptainer exec --contain --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v24.1.1.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} --anat-only -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
+    apptainer exec --contain --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME},$IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain $IMAGEDIR/fmriprep-v23.2.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant --participant-label ${subject} --output-spaces {MNI152NLin2009cAsym,T1w,fsnative} --anat-only -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
 
 
 XCPEngine - Correlation-based resting-state functional connectivity analysis
@@ -87,11 +87,7 @@ Running XCP-D Workflow
    -f 0 -w "/sing_scratch" --notrack --fs-license-file /imgdir/license.txt \
    /data/${DERIVATIVES_DIR}/fmriprep /data/${DERIVATIVES_DIR} participant
    
-   #get network-based statistics using matlab-R2019a.sif image & script from pipeline
-   apptainer run --bind ${scripts}/spm12:/spmtoolbox,${scripts}/matlab:/work,${scripts}/2019_03_03_BCT:/bctoolbox,${projDir}/bids/derivatives/xcp/${sesname}:/datain \
-   ${IMAGEDIR}/matlab-R2021a.sif /work/rsfcnbs.sh "xcp_despike" "${subject}"
-   
-A `more detailed tutorial <https://xcp_d.readthedocs.io/config/tutorial.html>`_ is available in the `XCPEngine documentation <https://xcp_d.readthedocs.io/index.html>`_
+A `more detailed tutorial <https://xcp_d.readthedocs.io/config/tutorial.html>`_ is available in the `XCP-D documentation <https://xcp_d.readthedocs.io/index.html>`_
 QSIPrep - DWI preprocessing and reconstruction
 **********************************************
 
