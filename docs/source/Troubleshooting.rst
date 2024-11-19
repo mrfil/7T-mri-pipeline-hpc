@@ -7,16 +7,16 @@ Troubleshooting
 Container building
 ==================
 
-Singularity cache and tmp
+Apptainer cache and tmp
 -------------------------
 Cache directory Error: "FATAL:   While performing build: conveyor failed to get: Error writing blob: write /tmp/bundle-temp-<bundlenumber>/oci-put-blob<blobnumber>>: no space left on device"
 
-Solution: Declare the variables SINGULARITY_CACHEDIR and SINGULARITY_TMPDIR before your apptainer build command as follows:
+Solution: Declare the variables APPTAINER_CACHEDIR and APPTAINER_TMPDIR before your apptainer build command as follows:
 
 .. code-block:: bash
 
     mkdir /path/to/apptainer_images/SINGCACHE && mkdir /path/to/apptainer_images/TMPSING
-    SINGULARITY_CACHEDIR=/path/to/apptainer_images/SINGCACHE SINGULARITY_TMPDIR=/path/to/apptainer_images/SINGTMP apptainer build yourimage.sif docker://organization/image:tag
+    APPTAINER_CACHEDIR=/path/to/apptainer_images/SINGCACHE APPTAINER_TMPDIR=/path/to/apptainer_images/SINGTMP apptainer build yourimage.sif docker://organization/image:tag
 
 SquashFS-tools
 --------------
@@ -96,5 +96,5 @@ Fix use your own pre-downloaded templateflow directory:
       tpl-MNI152Lin   tpl-MNI152NLin6Sym       tpl-OASIS30ANTs       tpl-WHS
     
     export TEMPLATEFLOW_HOST_HOME=/path/to/apptainer_images/templateflow
-    SINGULARITY_ENVTEMPLATEFLOW_HOME=/opt/templateflow
-    SINGULARITY_ENVTEMPLATEFLOW_HOME=/opt/templateflow apptainer run --nv -B ${TEMPLATEFLOW_HOST_HOME}:${SINGULARITY_ENVTEMPLATEFLOW_HOME},./bids:/data,./bids/derivatives/smriprep:/out,/path/to/apptainer_images/license.txt:/opt/freesurfer/license.txt /path/to/apptainer_images/smriprep-fastsurfer_dev.sif /data/ /out/ --fs-license-file /opt/freesurfer/license.txt participant --participant-label sub-<participantIDhere>
+    APPTAINER_ENVTEMPLATEFLOW_HOME=/opt/templateflow
+    APPTAINER_ENVTEMPLATEFLOW_HOME=/opt/templateflow apptainer run --nv -B ${TEMPLATEFLOW_HOST_HOME}:${APPTAINER_ENVTEMPLATEFLOW_HOME},./bids:/data,./bids/derivatives/smriprep:/out,/path/to/apptainer_images/license.txt:/opt/freesurfer/license.txt /path/to/apptainer_images/smriprep-fastsurfer_dev.sif /data/ /out/ --fs-license-file /opt/freesurfer/license.txt participant --participant-label sub-<participantIDhere>
