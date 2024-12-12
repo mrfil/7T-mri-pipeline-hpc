@@ -30,11 +30,11 @@ This following commands can be used to build these required images for the pipel
 
     apptainer build mriqc-v24.0.2.sif docker://poldracklab/mriqc:24.0.2
     apptainer build heudiconv-v1.3.0.sif docker://nipy/heudiconv:1.3.0
-    apptainer build fmriprep-v24.1.1.sif docker://nipreps/fmriprep:23.2.0
-    apptainer build xcp-d-v0.10.0.sif docker://pennlinc/xcp_d:0.10.0
+    apptainer build fmriprep-v23.0.2.sif docker://nipreps/fmriprep:23.0.2
+    apptainer build xcp-d-v0.9.1.sif docker://pennlinc/xcp_d:0.9.1
     #for reorient_fslstd to prepare for SCFSL_GPU
-    apptainer build qsiprep-v0.24.0.sif docker://pennbbl/qsiprep:0.24.0
-    apptainer build qsirecon-v0.23.2.sif docker://pennbbl/qsirecon:0.23.2
+    apptainer build qsiprep-v1.0.0.sif docker://pennbbl/qsiprep:1.0.0
+    apptainer build qsirecon-v1.0.0.sif docker://pennbbl/qsirecon:1.0.0
 
 
     # See README.md for more information on 
