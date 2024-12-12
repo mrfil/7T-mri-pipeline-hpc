@@ -33,7 +33,7 @@ mkdir ${base_dir}/${version}/scratch/stmp
 mkdir ${base_dir}/${version}/scratch/scache
 
 # 8. Singularity image housing
-mkdir ${base_dir}/singularity_images
+mkdir ${base_dir}/apptainer_images
 
 # change file permissions
 chmod 777 -R mkdir ${base_dir}/${version}
