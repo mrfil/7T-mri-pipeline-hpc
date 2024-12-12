@@ -80,7 +80,7 @@ then
 APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall \
 --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} \
 --bind $IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain \
-$IMAGEDIR/fmriprep-v23.2.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant \
+$IMAGEDIR/fmriprep-v23.0.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant \
 --participant-label ${subject} --longitudinal --use-aroma \
 --output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} \
 -w /paulscratch --fs-license-file /opt/freesurfer/license.txt
@@ -89,7 +89,7 @@ then
 APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall \
 --no-home --cleanenv --bind ${TEMPLATEFLOW_HOST_HOME}:${APPTAINERENV_TEMPLATEFLOW_HOME} \
 --bind $IMAGEDIR/license.txt:/opt/freesurfer/license.txt,$TMPSING:/paulscratch,${projDir}:/datain \
-$IMAGEDIR/fmriprep-v23.2.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant \
+$IMAGEDIR/fmriprep-v23.0.2.sif fmriprep /datain/bids /datain/bids/derivatives/fmriprep participant \
 --participant-label ${subject} --use-aroma \
 --output-spaces {MNI152NLin2009cAsym:res-1,MNI152NLin2009cAsym:res-native,T1w:res-1,fsnative:res-1} \
 -w /paulscratch --fs-license-file /opt/freesurfer/license.txt

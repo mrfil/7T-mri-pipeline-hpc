@@ -62,12 +62,20 @@ NOW=$(date +"%m-%d-%Y-%T")
 echo "xcp-d started $NOW" >>	${scripts}/fulltimer.txt	
 
 cd ${projDir}
-APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containall --no-home --cleanenv \
--B ${projDir}:/data,$TMPSING:/tmpdir $IMAGEDIR/xcp_d-v0.10.0.sif \
---participant_label ${subject} --nthreads $num_cpus \
---omp-nthreads $((num_cpus / 2)) --input-type fmriprep --smoothing $SMOOTHING -p ${CONFOUND_REGRESSION} \
--f 0 -w "/sing_scratch" --notrack --fs-license-file /imgdir/license.txt \
-/data/${DERIVATIVES_DIR}/fmriprep /data/${DERIVATIVES_DIR} participant
+   APPTAINER_CACHEDIR=${CACHESING} APPTAINER_TMPDIR=${TMPSING} apptainer run \
+    --cleanenv --containall --no-home --bind ${IMAGEDIR}:/imgdir,${TMPSING}:/sing_scratch \
+    --bind ${projDir}:/data ${IMAGEDIR}/xcp_d-v0.9.1.sif \
+    --participant-label ${CLEANSUBJECT} --nthreads $num_cpus \
+    --omp-nthreads 12 --mem-gb 192 \
+    --input-type fmriprep --smoothing $SMOOTHING -p ${CONFOUND_REGRESSION} \
+    --motion-filter-type none \
+    --combine-runs n --despike n \
+    --file-format nifti --linc-qc y --min-coverage 0.5 --output-type censored \
+    --warp-surfaces-native2std n --abcc-qc y \
+    --lower-bpf 0.01 --upper-bpf 0.08 --bpf-order 2 \
+    --notrack --write-graph -vv --create-matrices all --low-mem \
+    --mode none -f 0 -w /sing_scratch --notrack --fs-license-file /imgdir/license.txt \
+    /data/bids/derivatives/fmriprep /data/bids/derivatives/xcp_d participant
 
 NOW=$(date +"%m-%d-%Y-%T")
 echo "xcp-d finished $NOW" >> ${scripts}/fulltimer.txt
