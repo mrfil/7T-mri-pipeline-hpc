@@ -5,7 +5,9 @@ subject=$1
 sesname=$2
 
 cd /datanoddi
+# TO-DO: update atlas names
 for atlas in aal116 aicha384 brainnetome246 gordon333 power264 schaefer100x17 schaefer100x7 schaefer200x17 schaefer200x7 schaefer400x17 schaefer400x7; do
+    # TO-DO: update for atlas files and look-up tables
     roi_names="./*${atlas}_mrtrixLUT.txt"
     parc_file="./*${atlas}_atlas.nii.gz"
     echo $roi_names
@@ -24,7 +26,8 @@ for atlas in aal116 aicha384 brainnetome246 gordon333 power264 schaefer100x17 sc
         fslmaths ${parc_file} -thr $roi_lowthresh -uthr $roi_highthresh roitmp.nii.gz
         for metric in ICVF ISOVF OD; do
             echo "Calculating ROI stats in $metric image"
-            metricImage="./*${metric}_NODDI.nii.gz"
+	    # TO-DO: edit to <source_entities>_model-noddi_param-ICVF_dwimap.nii.gz [X]
+            metricImage="./*_model-noddi_param-${metric}_dwimap.nii.gz"
             fslstats ${metricImage} -k roitmp.nii.gz -M -S -r > roistats.txt
             roi_stats_tmp=`cat roistats.txt`
             echo $roi_stats_tmp
