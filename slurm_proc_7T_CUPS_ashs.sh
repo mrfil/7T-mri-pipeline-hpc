@@ -54,7 +54,7 @@ echo "Running ASHS on ${subject} ${sesname}"
 
 export APPTAINERENV_ASHS_ROOT=/opt/ashs/ashs-1.0.0
 APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv \
---bind ${projDir}:/datain,${IMAGEDIR}/ashs_config.sh:/opt/ashs/ashs-1.0.0/bin/ashs_config.sh \
+--bind ${projDir}:/datain \
 $IMAGEDIR/ashs-1.0.0.sif $APPTAINERENV_ASHS_ROOT/bin/ashs_main.sh -a /opt/ashs/ashs_atlas_umcutrecht_7t_20170810 \
 -g /datain/bids/sourcedata/${subject}/${sesname}/anat/${subject}_${sesname}_acq-mp2rageunidenoised_T1w.nii.gz \
 -f /datain/bids/sourcedata/${subject}/${sesname}/anat/${subject}_${sesname}_acq-highreshippocampus_run-1_T2w.nii.gz \
