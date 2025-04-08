@@ -56,7 +56,7 @@ for imt in `echo "${MODALITY}"`; do
 echo "Defacing ${imt} with pydeface version 2.0.0"
 echo "Defacing ${imt[@]} with pydeface version 2.0.0" >> ${projDir}/$LOGFILE
 # deface images with apptainer image of pydeface
-find . -type f -name "*_${imt[@]}.nii.gz" -exec sh -c 'echo "$1"' - {} \; -and -exec bash -c 'apptainer run -B ${dataDir}:/data --pwd /data ${IMAGEDIR}/pydeface-v2.0.0.sif pydeface "$1"' - {} \; -and -print
+find . -type f -name "*_${imt[@]}.nii.gz" -exec sh -c 'echo "$1"' - {} \; -and -exec bash -c 'apptainer run --cleanenv --containall -B ${dataDir}:/data --pwd /data ${IMAGEDIR}/pydeface-v2.0.0.sif pydeface "$1"' - {} \; -and -print
 #devnote: old end of prev_line "{}" \; instead of {} \;"
 
 # rename output -- note that find does not support string substitution and 
