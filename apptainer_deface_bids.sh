@@ -5,16 +5,16 @@
 # requires Python module pydeface
 # written by Megan Finnegan
 # 
-# adapted by Paul B Camacho for HPC-deployment: uses Singularity image of pydeface
+# adapted by Paul B Camacho for HPC-deployment: uses apptainer image of pydeface
 # 	see github.com/pcamach2/pydeface for Dockerfile and build steps
 #
 # designed for use with BIDS v1.7.0 (https://bids-specification.readthedocs.io/)
 # 
 # usage: Takes project, image modality to denoise, base directory, and version of pipeline as inputs
-#       singularity_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
+#       apptainer_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>
 
 echo 'usage: Takes project, image modality to denoise, base directory, and version of pipeline as inputs'
-echo 'singularity_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>'
+echo 'apptainer_deface_bids.sh -p <Project ID> -m <"T1w T2w FLAIR ..."> -b <base directory for pipeline> -t <version of pipeline>'
 
 while getopts :p:m:b:t: option; do
     case ${option} in
@@ -26,7 +26,7 @@ while getopts :p:m:b:t: option; do
 done
 
 export projDir="${BASED}/${VERSION}/testing/${PROJECT}"
-export IMAGEDIR="${BASED}/singularity_images"
+export IMAGEDIR="${BASED}/apptainer_images"
 
 CACHESING="${BASED}/${VERSION}/scratch/scache/${PROJECT}_deface"
 TMPSING="${BASED}/${VERSION}/scratch/stmp/${PROJECT}_deface"
@@ -55,8 +55,8 @@ for imt in `echo "${MODALITY}"`; do
 
 echo "Defacing ${imt} with pydeface version 2.0.0"
 echo "Defacing ${imt[@]} with pydeface version 2.0.0" >> ${projDir}/$LOGFILE
-# deface images with Singularity image of pydeface
-find . -type f -name "*_${imt[@]}.nii.gz" -exec sh -c 'echo "$1"' - {} \; -and -exec bash -c 'singularity run -B ${dataDir}:/data --pwd /data ${IMAGEDIR}/pydeface-v2.0.0.sif pydeface "$1"' - {} \; -and -print
+# deface images with apptainer image of pydeface
+find . -type f -name "*_${imt[@]}.nii.gz" -exec sh -c 'echo "$1"' - {} \; -and -exec bash -c 'apptainer run -B ${dataDir}:/data --pwd /data ${IMAGEDIR}/pydeface-v2.0.0.sif pydeface "$1"' - {} \; -and -print
 #devnote: old end of prev_line "{}" \; instead of {} \;"
 
 # rename output -- note that find does not support string substitution and 
