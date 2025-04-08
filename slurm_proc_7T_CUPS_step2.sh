@@ -114,7 +114,7 @@ APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer run --containa
 echo "Running XCP-D on $subject $sesname"
 APPTAINER_CACHEDIR=$CACHESING APPTAINER_TMPDIR=$TMPSING apptainer exec --containall --no-home --cleanenv \
 --bind ${projDir}/bids/derivatives:/datain,${IMAGEDIR}/license.txt:/opt/freesurfer/license.txt \
-$IMAGEDIR/xcp-d-v0.10.0.sif --participant_label ${subject} --nthreads $num_cpus \
+$IMAGEDIR/xcp-d-v0.9.1.sif --participant_label ${subject} --nthreads $num_cpus \
 --omp-nthreads $((num_cpus / 2)) --input-type fmriprep --smoothing $SMOOTHING -p ${CONFOUND_REGRESSION} \
 -f 0 -w "/sing_scratch" --notrack --fs-license-file /imgdir/license.txt \
 /datain/fmriprep /datain/ participant
